@@ -3,9 +3,9 @@ package az.code.carlada.dtos;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ListingGetDTO { // detail
+public class ListingGetDTO {
     private Long id;
-    private UserDTO user;
+    private AppUserDTO user;
     private MakeDTO make;
     private ModelDTO model;
     private Integer year;
