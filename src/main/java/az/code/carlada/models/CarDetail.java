@@ -20,7 +20,6 @@ public class CarDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String description;
     @Enumerated(EnumType.STRING)
     private FuelType fuelType;
     @Enumerated(EnumType.STRING)
@@ -31,9 +30,6 @@ public class CarDetail {
     private Gearbox gearBox;
     @OneToOne
     private Car car;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="city_id", nullable=false)
-    private City city;
     @ManyToMany
     @JoinTable(name = "car_details_specification", joinColumns = {
             @JoinColumn(name = "car_details_id")

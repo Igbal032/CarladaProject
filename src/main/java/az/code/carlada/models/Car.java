@@ -17,12 +17,12 @@ public class Car {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer year;
-    private Double mileage;
-    private Boolean creditOption;
+    private Integer mileage;
+    private Boolean loanOption;
     private Boolean barterOption;
     private Boolean leaseOption;
     private Boolean cashOption;
-    private Double price;
+    private Integer price;
     @ManyToOne
     @JoinColumn(name = "model_id", nullable = false)
     private Model model;

@@ -1,5 +1,5 @@
 package az.code.carlada.dtos;
 
 public class RegisterResponseDTO {
-    String message; // because of the email verification message
+    private String message; // because of the email verification message
 }
