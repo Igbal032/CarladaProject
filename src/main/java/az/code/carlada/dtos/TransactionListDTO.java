@@ -2,7 +2,7 @@ package az.code.carlada.dtos;
 
 import java.time.LocalDateTime;
 
-public class TransactionListDto {
+public class TransactionListDTO {
     private Integer id;
     private Long listingId; // nullable
     private Double amount;
