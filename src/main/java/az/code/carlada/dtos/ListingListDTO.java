@@ -1,7 +1,9 @@
 package az.code.carlada.dtos;
 
-import java.time.LocalDateTime;
+import lombok.Builder;
 
+import java.time.LocalDateTime;
+@Builder(toBuilder = true)
 public class ListingListDTO { // list dtos ,  search return dtos
     Long id;
     String makeName;

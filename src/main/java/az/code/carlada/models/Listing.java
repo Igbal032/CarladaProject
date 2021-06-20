@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -22,10 +23,13 @@ public class Listing {
     private Status type;
     private String thumbnailUrl;
     private LocalDate creationDate;
-    private LocalDate updateDate;
+    private LocalDateTime UpdatedAt;
     @OneToOne(mappedBy = "listing")
     private Car car;
     @OneToMany(mappedBy="listing"
             ,cascade = CascadeType.ALL)
     private List<Images> images;
+    @ManyToOne
+    @JoinColumn(name="appuser_id", nullable=false)
+    private AppUser appUser;
 }
