@@ -23,4 +23,6 @@ public class AppUser {
     private Double amount;
     @OneToMany(mappedBy="appUser")
     private List<Transaction> transactions;
+    @OneToMany(mappedBy="appUser")
+    private List<Listing> listings;
 }

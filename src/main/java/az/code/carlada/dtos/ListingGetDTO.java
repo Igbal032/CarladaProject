@@ -1,8 +1,10 @@
 package az.code.carlada.dtos;
 
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 import java.util.List;
-
+@Builder(toBuilder = true)
 public class ListingGetDTO {
     private Long id;
     private AppUserDTO user;

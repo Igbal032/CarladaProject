@@ -32,4 +32,7 @@ public class Listing {
     @OneToMany(mappedBy="listing"
             ,cascade = CascadeType.ALL)
     private List<Images> images;
+    @ManyToOne
+    @JoinColumn(name="appuser_id", nullable=false)
+    private AppUser appUser;
 }

@@ -3,10 +3,7 @@ package az.code.carlada.controllers;
 import az.code.carlada.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/profile")
@@ -17,9 +14,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/wallet")
-    public ResponseEntity<Double> wallet(@PathVariable Double amount){
-        String email = "";//check
+    @PutMapping("/wallet/increase")
+    public ResponseEntity<Double> wallet(@RequestParam Double amount){
+        String email = "igbal-hasanli";//check
         Double userAmount = userService.addAmount(email,amount);
         return new ResponseEntity<>(userAmount,HttpStatus.OK);
     }
