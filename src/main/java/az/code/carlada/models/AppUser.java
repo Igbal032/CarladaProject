@@ -1,7 +1,7 @@
 package az.code.carlada.models;
 
-import az.code.carlada.models.Transaction;
 import lombok.*;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -24,5 +24,5 @@ public class AppUser {
     @OneToMany(mappedBy="appUser")
     private List<Transaction> transactions;
     @OneToMany(mappedBy="appUser")
-    private List<Listing> listings;
+    private List<Subscription> subscriptions;
 }

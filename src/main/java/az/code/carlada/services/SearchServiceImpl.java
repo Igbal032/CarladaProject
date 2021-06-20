@@ -7,7 +7,6 @@ import az.code.carlada.dtos.SearchDTO;
 import az.code.carlada.models.Listing;
 import az.code.carlada.utils.ModelMapperUtil;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class SearchServiceImpl implements SearchService {
 
     public SearchServiceImpl(SearchDAO searchDAO, ModelMapper modelMapper) {
         this.searchDAO = searchDAO;
-        this.mapperUtil = new ModelMapperUtil(modelMapper);
+        this.mapperUtil = ModelMapperUtil.builder().modelMapper(modelMapper).build();
     }
 
     public PaginationDTO<ListingListDTO> searchListings(Map<String, String> params) {

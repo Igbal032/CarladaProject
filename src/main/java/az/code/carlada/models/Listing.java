@@ -4,7 +4,6 @@ import az.code.carlada.enums.Status;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,7 +31,4 @@ public class Listing {
     @OneToMany(mappedBy="listing"
             ,cascade = CascadeType.ALL)
     private List<Images> images;
-    @ManyToOne
-    @JoinColumn(name="appuser_id", nullable=false)
-    private AppUser appUser;
 }

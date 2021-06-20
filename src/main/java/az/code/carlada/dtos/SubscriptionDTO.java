@@ -1,8 +1,16 @@
 package az.code.carlada.dtos;
 
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@Data
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class SubscriptionDTO {
     private Long subId;
     private String name;
@@ -13,10 +21,10 @@ public class SubscriptionDTO {
     private Integer maxYear;
     private Integer minPrice;
     private Integer maxPrice;
-    private Double minMileage;
-    private Double maxMileage;
-    private Integer fuelType;
-    private Integer bodyType;
+    private Integer minMileage;
+    private Integer maxMileage;
+    private String fuelType;
+    private String bodyType;
     private Boolean loanOption;
     private Boolean leaseOption;
     private Boolean cashOption;
