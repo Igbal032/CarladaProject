@@ -18,7 +18,7 @@ public class Car {
     private Long id;
     private Integer year;
     private Integer mileage;
-    private Boolean creditOption;
+    private Boolean loanOption;
     private Boolean barterOption;
     private Boolean leaseOption;
     private Boolean cashOption;

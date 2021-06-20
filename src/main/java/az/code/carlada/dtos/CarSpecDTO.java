@@ -1,6 +1,6 @@
 package az.code.carlada.dtos;
 
 public class CarSpecDTO {
-    String name;
-    Boolean value;
+    private String name;
+    private Boolean value;
 }

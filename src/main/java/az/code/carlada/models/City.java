@@ -18,5 +18,5 @@ public class City {
     private String cityName;
     @OneToMany(mappedBy="city"
             ,cascade = CascadeType.ALL)
-    private List<CarDetail> carDetails;
+    private List<Listing> listings;
 }
