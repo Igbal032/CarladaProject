@@ -12,9 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchDTO {
-    private Integer make;
-    private Integer model;
-    private Integer location;
+    private Long make;
+    private Long model;
+    private Long location;
     private Integer minYear;
     private Integer maxYear;
     private Integer minPrice;

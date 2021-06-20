@@ -11,6 +11,8 @@ public interface SubscriptionDAO {
 
     List<Subscription> getSubscriptions(AppUser appUser);
 
+    List<Subscription> getAllSubscriptions();
+
     Subscription getSubscription(Long id, AppUser appUser);
 
     Boolean checkSubscription(Long id, AppUser appUser);

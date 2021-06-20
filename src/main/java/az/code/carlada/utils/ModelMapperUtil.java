@@ -67,27 +67,29 @@ public class ModelMapperUtil {
 
     public SubscriptionListDTO convertSubscriptionToListDTO(Subscription s) {
 
-        return SubscriptionListDTO.builder()
+        SubscriptionListDTO sub = SubscriptionListDTO.builder()
                 .name(s.getName())
                 .subId(s.getSubId())
                 .bodyType(s.getBodyType())
                 .fuelType(s.getFuelType())
                 .color(s.getColor())
                 .barterOption(s.getBarterOption())
-                .loanOption(s.getLoanOption())
-                .leaseOption(s.getLeaseOption())
-                .cashOption(s.getCashOption())
-                .creationDate(LocalDateTime.now())
-                .minPrice(s.getMinPrice())
-                .maxPrice(s.getMaxPrice())
-                .minYear(s.getMinYear())
-                .maxYear(s.getMaxYear())
-                .minMileage(s.getMinMileage())
-                .maxMileage(s.getMaxMileage())
-                .specs(mapList(s.getSpecs(), CarSpecDTO.class))
-                .city(modelMapper.map(s.getCity(), CityDTO.class))
-                .model(modelMapper.map(s.getModel(), ModelDTO.class))
-                .make(modelMapper.map(s.getModel().getMake(), MakeDTO.class))
+                .loanOption(s.getLoanOption()).leaseOption(s.getLeaseOption())
+                .cashOption(s.getCashOption()).creationDate(LocalDateTime.now())
+                .minPrice(s.getMinPrice()).maxPrice(s.getMaxPrice())
+                .minYear(s.getMinYear()).maxYear(s.getMaxYear())
+                .minMileage(s.getMinMileage()).maxMileage(s.getMaxMileage())
                 .build();
+
+        if (s.getSpecs() != null)
+            sub.setSpecs(mapList(s.getSpecs(), CarSpecDTO.class));
+        if (s.getCity() != null)
+            sub.setCity(modelMapper.map(s.getCity(), CityDTO.class));
+        if (s.getModel() != null)
+            sub.setModel(modelMapper.map(s.getModel(), ModelDTO.class));
+        if (s.getModel() != null && s.getModel().getMake() != null)
+            sub.setMake(modelMapper.map(s.getModel().getMake(), MakeDTO.class));
+
+        return sub;
     }
 }

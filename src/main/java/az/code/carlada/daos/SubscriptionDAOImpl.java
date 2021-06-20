@@ -1,15 +1,11 @@
 package az.code.carlada.daos;
 
-import az.code.carlada.dtos.SubscriptionDTO;
-import az.code.carlada.exceptions.CityNotFound;
-import az.code.carlada.exceptions.ModelNotFound;
+import az.code.carlada.dtos.*;
+import az.code.carlada.exceptions.DataNotFound;
 import az.code.carlada.exceptions.SubscriptionNotFound;
 import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Subscription;
-import az.code.carlada.repositories.CityRepo;
-import az.code.carlada.repositories.ModelRepo;
-import az.code.carlada.repositories.SpecificationRepo;
-import az.code.carlada.repositories.SubscriptionRepo;
+import az.code.carlada.repositories.*;
 import az.code.carlada.utils.ModelMapperUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -22,14 +18,17 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
     ModelMapperUtil mapperUtil;
     CityRepo cityRepo;
     ModelRepo modelRepo;
+    MakeRepo makeRepo;
     SpecificationRepo specRepo;
 
     public SubscriptionDAOImpl(SubscriptionRepo subRepo,
                                CityRepo cityRepo,
                                ModelRepo modelRepo,
                                SpecificationRepo specRepo,
+                               MakeRepo makeRepo,
                                ModelMapper mapper) {
         this.cityRepo = cityRepo;
+        this.makeRepo = makeRepo;
         this.modelRepo = modelRepo;
         this.specRepo = specRepo;
         this.subRepo = subRepo;
@@ -40,25 +39,48 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
     public Subscription saveSubscription(SubscriptionDTO s, AppUser appUser) {
         if (s.getSubId() != null) checkSubscription(s.getSubId(), appUser);
 
-        if (cityRepo.findById(s.getCityId()).isEmpty())
-            throw new CityNotFound("City couldn't found for given id");
+        Subscription sub = mapperUtil.convertDTOToSubscription(s);
 
-        if (modelRepo.findById(s.getModelId()).isEmpty())
-            throw new ModelNotFound("Model couldn't found for given id");
+        if (s.getCityId() != null){
+            if(cityRepo.findById(s.getCityId()).isEmpty())
+                throw new DataNotFound("City couldn't found for given id");
 
-        Subscription subscription = mapperUtil.convertDTOToSubscription(s);
+            sub.setCity(cityRepo.findById(s.getCityId()).get());
+        }
 
-        return subRepo.save(subscription.toBuilder()
+        if (s.getMakeId() != null) {
+            if(makeRepo.findById(s.getMakeId()).isEmpty())
+            throw new DataNotFound("Make couldn't found for given id");
+        }
+
+        if (s.getModelId() != null){
+            if(modelRepo.findById(s.getModelId()).isEmpty())
+                throw new DataNotFound("Model couldn't found for given id");
+
+            sub.setModel(modelRepo.findById(s.getModelId()).get());
+        }
+
+        if (s.getSpecs() != null) {
+            s.getSpecs().forEach(i -> {
+                if (specRepo.findById(i).isEmpty())
+                    throw new DataNotFound("Specifications couldn't found for given id");
+            });
+            sub.setSpecs(specRepo.findAllById(s.getSpecs()));
+        }
+
+        return subRepo.save(sub.toBuilder()
                 .appUser(appUser)
-                .specs(specRepo.findAllById(s.getSpecs()))
-                .city(cityRepo.findById(s.getCityId()).get())
-                .model(modelRepo.findById(s.getModelId()).get())
                 .build());
     }
 
     @Override
     public List<Subscription> getSubscriptions(AppUser appUser) {
         return subRepo.findAllByAppUser(appUser);
+    }
+
+    @Override
+    public List<Subscription> getAllSubscriptions() {
+        return subRepo.findAll();
     }
 
     @Override

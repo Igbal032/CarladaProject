@@ -25,6 +25,9 @@ public class Listing {
     private LocalDateTime updatedAt;
     @OneToOne(mappedBy = "listing")
     private Car car;
+    @ManyToOne
+    @JoinColumn(name="appuser_id")
+    private AppUser appUser;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="city_id")
     private City city;

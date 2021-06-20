@@ -6,11 +6,11 @@ import az.code.carlada.models.Listing;
 import org.springframework.data.jpa.domain.Specification;
 
 public interface SearchSpecificationService {
-    Specification<Listing> equalMake(Integer id);
+    Specification<Listing> equalMake(Long id);
 
-    Specification<Listing> equalModel(Integer id);
+    Specification<Listing> equalModel(Long id);
 
-    Specification<Listing> equalLocation(Integer id);
+    Specification<Listing> equalLocation(Long id);
 
     Specification<Listing> equalFuelType(FuelType fuelType);
 

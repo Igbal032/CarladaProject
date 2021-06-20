@@ -25,4 +25,6 @@ public class AppUser {
     private List<Transaction> transactions;
     @OneToMany(mappedBy="appUser")
     private List<Subscription> subscriptions;
+    @OneToMany(mappedBy="appUser")
+    private List<Listing> listings;
 }

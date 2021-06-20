@@ -9,11 +9,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PaymentServiceImp implements PaymentService{
+public class PaymentServiceImpl implements PaymentService{
 
     PaymentDAO paymentDAO;
 
-    public PaymentServiceImp(PaymentDAO paymentDAO) {
+    public PaymentServiceImpl(PaymentDAO paymentDAO) {
         this.paymentDAO = paymentDAO;
     }
 

@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 
 @ResponseStatus(value = HttpStatus.NOT_FOUND)
-public class CityNotFound extends RuntimeException {
-    public CityNotFound(String message) {
+public class DataNotFound extends RuntimeException {
+    public DataNotFound(String message) {
         super(message);
     }
 }

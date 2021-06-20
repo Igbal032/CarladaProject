@@ -14,7 +14,7 @@ import javax.annotation.PreDestroy;
 public class SchedulerService {
     private static final Logger LOG = LoggerFactory.getLogger(SchedulerService.class);
 
-    Scheduler scheduler;
+    private Scheduler scheduler;
 
     public SchedulerService(Scheduler scheduler) {
         this.scheduler = scheduler;
