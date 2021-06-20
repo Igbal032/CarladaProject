@@ -21,7 +21,7 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     public DictionaryServiceImpl(DictionaryDAO dictionaryDAO, ModelMapper modelMapper) {
         this.dictionaryDAO = dictionaryDAO;
-        this.mapperUtil = new ModelMapperUtil(modelMapper);
+        this.mapperUtil = ModelMapperUtil.builder().modelMapper(modelMapper).build();
     }
 
     @Override

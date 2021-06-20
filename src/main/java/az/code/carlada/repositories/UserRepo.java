@@ -3,7 +3,9 @@ package az.code.carlada.repositories;
 import az.code.carlada.models.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface UserRepo extends JpaRepository<AppUser,Double> {
     AppUser getAppUserByEmail(String email);
-    AppUser getAppUserByUsername(String username);
+    Optional<AppUser> getAppUserByUsername(String username);
 }

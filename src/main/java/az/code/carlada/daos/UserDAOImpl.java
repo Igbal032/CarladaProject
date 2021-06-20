@@ -17,8 +17,10 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public Double addAmount(String username,Double amount) {
-        AppUser appUser = userRepo.getAppUserByUsername(username);
-        if (appUser!=null){
+        if(userRepo.getAppUserByUsername(username).isEmpty())
+            throw new UserNotFound("User Not Found");
+
+        AppUser appUser = userRepo.getAppUserByUsername(username).get();
             if (amount<1){
                 throw new IllegalSignException("Amount must not be less than 1");
             }
@@ -26,7 +28,13 @@ public class UserDAOImpl implements UserDAO {
             appUser.setAmount(totalAmount);
             userRepo.save(appUser);
            return totalAmount;
-        }
-        throw new UserNotFound("User Not Found");
+    }
+
+    @Override
+    public AppUser getUserByUsername(String username) {
+        if (userRepo.getAppUserByUsername(username).isEmpty())
+            throw new UserNotFound("User Not Found");
+
+        return userRepo.getAppUserByUsername(username).get();
     }
 }

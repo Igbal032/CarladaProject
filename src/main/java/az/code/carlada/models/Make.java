@@ -1,5 +1,7 @@
 package az.code.carlada.models;
+
 import lombok.*;
+
 import javax.persistence.*;
 import java.util.List;
 
