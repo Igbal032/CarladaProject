@@ -18,6 +18,4 @@ public interface ListingService {
     ListingGetDTO getListingByIdByProfile(Long id);
     ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO);
     void delete(long id);
-    String makeListVip(long id);
-    String makeListPaid(long id);
 }

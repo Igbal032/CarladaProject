@@ -1,7 +1,7 @@
 package az.code.carlada.enums;
 
 public enum Status {
-    DEFAULT(3),
+    FREE(0),
     STANDARD (12),
     VIP(15);
 

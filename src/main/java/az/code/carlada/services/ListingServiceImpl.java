@@ -118,29 +118,5 @@ public class ListingServiceImpl implements ListingService {
         listingDAO.delete(id);
     }
 
-    @Override
-    public String makeListVip(long id) {
-        Listing listing = listingRepository.getById(id);
-        if(!listingRepository.findById(id).isPresent()){
-            throw new ListingNotFound("Not such a listing");
-        }
-        else {
-            listing.setType(Status.VIP);
-            listingRepository.save(listing);
-            return "Type of listing "+id+" changed to VIP";
-        }
-    }
 
-    @Override
-    public String makeListPaid(long id) {
-        Listing listing = listingRepository.getById(id);
-        if(!listingRepository.findById(id).isPresent()){
-            throw new ListingNotFound("Not such a listing");
-        }
-        else {
-            listing.setType(Status.STANDARD);
-            listingRepository.save(listing);
-            return "Type of listing "+id+" changed to STANDARD";
-        }
-    }
 }
