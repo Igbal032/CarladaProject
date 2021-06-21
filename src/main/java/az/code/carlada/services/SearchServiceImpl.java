@@ -5,6 +5,7 @@ import az.code.carlada.dtos.ListingListDTO;
 import az.code.carlada.dtos.PaginationDTO;
 import az.code.carlada.dtos.SearchDTO;
 import az.code.carlada.models.Listing;
+import az.code.carlada.models.Subscription;
 import az.code.carlada.utils.ModelMapperUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -29,5 +30,9 @@ public class SearchServiceImpl implements SearchService {
         List<ListingListDTO> listDTOS = l.getContent().stream()
                 .map(i -> mapperUtil.convertListingToListDto(i)).collect(Collectors.toList());
         return new PaginationDTO<>(l.hasNext(), l.hasPrevious(), l.getTotalPages(), l.getNumber(), l.getTotalElements(), listDTOS);
+    }
+    public List<ListingListDTO> searchAllListings(Subscription subscription) {
+        return searchDAO.searchAllListings(subscription).stream()
+                .map(i -> mapperUtil.convertListingToListDto(i)).collect(Collectors.toList());
     }
 }

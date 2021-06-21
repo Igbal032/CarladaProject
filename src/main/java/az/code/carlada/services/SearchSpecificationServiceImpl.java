@@ -9,19 +9,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class SearchSpecificationServiceImpl implements SearchSpecificationService {
     @Override
-    public Specification<Listing> equalMake(Integer id) {
+    public Specification<Listing> equalMake(Long id) {
         if (id == null) return null;
         return (root, query, cb) -> cb.equal(root.get("car").get("model").get("make").get("id"), id);
     }
 
     @Override
-    public Specification<Listing> equalModel(Integer id) {
+    public Specification<Listing> equalModel(Long id) {
         if (id == null) return null;
         return (root, query, cb) -> cb.equal(root.get("car").get("model").get("id"), id);
     }
 
     @Override
-    public Specification<Listing> equalLocation(Integer id) {
+    public Specification<Listing> equalLocation(Long id) {
         if (id == null) return null;
         return (root, query, cb) -> cb.equal(root.get("city").get("id"), id);
     }

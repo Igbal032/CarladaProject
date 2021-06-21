@@ -44,12 +44,15 @@ public class Subscription {
     @JoinColumn(name="model_id")
     private Model model;
     @ManyToOne
+    @JoinColumn(name="make_id")
+    private Make make;
+    @ManyToOne
     @JoinColumn(name="city_id")
     private City city;
     @ManyToOne
     @JoinColumn(name="appuser_id")
     private AppUser appUser;
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "subscription_specification", joinColumns = {
             @JoinColumn(name = "subscription_id")
     },
