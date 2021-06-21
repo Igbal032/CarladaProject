@@ -1,8 +1,11 @@
 package az.code.carlada.dtos;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Data
 public class SubscriptionDto {
     private Long subId;
     private String name;

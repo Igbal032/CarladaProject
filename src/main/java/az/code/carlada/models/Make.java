@@ -1,4 +1,7 @@
 package az.code.carlada.models;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import javax.persistence.*;
 import java.util.List;
@@ -11,11 +14,11 @@ import java.util.List;
 @Entity
 @Table(name = "makes")
 public class Make {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String makeName;
+    @JsonManagedReference
     @OneToMany(mappedBy="make"
             ,cascade = CascadeType.ALL)
     private List<Model> models;

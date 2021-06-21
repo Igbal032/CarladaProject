@@ -1,4 +1,6 @@
 package az.code.carlada.models;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 import javax.persistence.*;
 import java.util.List;
@@ -15,7 +17,6 @@ public class Specification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String specificationName;
-    private Boolean hasSpecification;
     @ManyToMany(mappedBy = "carSpecifications",cascade = CascadeType.PERSIST)
     private List<CarDetail> carDetails;
 }

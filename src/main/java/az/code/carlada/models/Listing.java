@@ -1,14 +1,15 @@
 package az.code.carlada.models;
 
 import az.code.carlada.enums.Status;
+import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,11 +22,23 @@ public class Listing {
     @Enumerated(EnumType.STRING)
     private Status type;
     private String thumbnailUrl;
-    private LocalDate creationDate;
-    private LocalDate updateDate;
-    @OneToOne(mappedBy = "listing")
+    private Boolean autoPay;
+    private Boolean isActive;
+    private String description;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    @OneToOne(mappedBy = "listing", cascade=CascadeType.ALL, fetch = FetchType.EAGER)
     private Car car;
+    @JsonManagedReference
     @OneToMany(mappedBy="listing"
             ,cascade = CascadeType.ALL)
     private List<Images> images;
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="city_id", nullable=false)
+    private City city;
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="appuser_id")
+    private AppUser appUser;
 }
