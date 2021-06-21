@@ -18,9 +18,12 @@ public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String cityName;
     @JsonManagedReference
     @OneToMany(mappedBy="city"
             ,cascade = CascadeType.ALL)
     private List<Listing> listings;
+    @OneToMany(mappedBy="city"
+            ,cascade = CascadeType.ALL)
+    private List<Subscription> subscriptions;
 }

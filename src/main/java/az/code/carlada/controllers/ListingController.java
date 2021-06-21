@@ -1,25 +1,27 @@
 package az.code.carlada.controllers;
 
 import az.code.carlada.dtos.ListingListDTO;
-import az.code.carlada.models.Listing;
 import az.code.carlada.services.ListingService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import az.code.carlada.services.SearchService;
+
+import java.util.Map;
 
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping(path = "/api/v1/listings")
 public class ListingController {
-
     ListingService listingService;
+    SearchService searchService;
 
-    public ListingController(ListingService listingService) {
+    public ListingController(ListingService listingService, SearchService searchService) {
         this.listingService = listingService;
+        this.searchService = searchService;
     }
 
     @GetMapping
@@ -38,10 +40,8 @@ public class ListingController {
         return new ResponseEntity(listingService.getListingById(id), HttpStatus.OK);
     }
 
-
-    @GetMapping(path = "/dictionaries/makes")
-    public ResponseEntity getMakes(){
-        return new ResponseEntity(OK);
+    @GetMapping(path = "/search")
+    public ResponseEntity search(@RequestParam(required = false) Map<String, String> allParams) {
+        return new ResponseEntity(searchService.searchListings(allParams), OK);
     }
-
 }

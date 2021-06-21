@@ -7,11 +7,12 @@ import az.code.carlada.models.Make;
 import az.code.carlada.models.Model;
 
 import java.util.List;
+import java.util.Set;
 
 public interface DictionaryDAO {
     List<Make> getMakes();
     List<Model> getModels(Long id);
     List<City> getCities();
-    List<FuelType> getFuelTypes();
-    List<BodyType> getBodyTypes();
+    Set<FuelType> getFuelTypes();
+    Set<BodyType> getBodyTypes();
 }

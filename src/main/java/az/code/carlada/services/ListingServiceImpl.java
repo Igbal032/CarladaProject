@@ -31,7 +31,7 @@ public class ListingServiceImpl implements ListingService {
 
     public ListingServiceImpl(ListingDAO listingDAO, ModelMapper modelMapper, ModelRepo modelRepository, ListingRepo listingRepository, MakeRepo makeRepository, CityRepo cityRepository, SpecificationRepo specRepository, UserRepo userRepository) {
         this.listingDAO = listingDAO;
-        this.mapperUtil = new ModelMapperUtil(modelMapper);
+        this.mapperUtil = ModelMapperUtil.builder().modelMapper(modelMapper).build();
         this.listingRepository = listingRepository;
         this.modelRepository = modelRepository;
         this.makeRepository = makeRepository;
@@ -77,7 +77,7 @@ public class ListingServiceImpl implements ListingService {
         Model model = modelRepository.getById(listingCreationDTO.getModelId());
         Make make = makeRepository.getById(listingCreationDTO.getMakeId());
         City city = cityRepository.getById(listingCreationDTO.getCityId());
-        AppUser appUser = userRepository.getAppUserByUsername("shafig");
+        AppUser appUser = userRepository.getAppUserByUsername("shafig").get();
         model.setMake(make);
         CarDetail carDetail = CarDetail.builder()
                 .bodyType(BasicUtil.getEnumFromString(BodyType.class, listingCreationDTO.getBodyType()))
@@ -91,14 +91,13 @@ public class ListingServiceImpl implements ListingService {
                 .year(listingCreationDTO.getYear())
                 .price(listingCreationDTO.getPrice())
                 .mileage(listingCreationDTO.getMileage())
-                .creditOption(listingCreationDTO.getCreditOption())
+                .loanOption(listingCreationDTO.getCreditOption())
                 .barterOption(listingCreationDTO.getBarterOption())
                 .leaseOption(listingCreationDTO.getLeaseOption())
                 .cashOption(listingCreationDTO.getCashOption())
                 .carDetail(carDetail)
                 .build();
         Listing listing = Listing.builder()
-                .id(listingCreationDTO.getId())
                 .isActive(true)
                 .description(listingCreationDTO.getDescription())
                 .appUser(appUser)

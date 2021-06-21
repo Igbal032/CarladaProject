@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Data
 @Builder(toBuilder = true)
@@ -21,7 +20,7 @@ public class Car {
     private Long id;
     private Integer year;
     private Integer mileage;
-    private Boolean creditOption;
+    private Boolean loanOption;
     private Boolean barterOption;
     private Boolean leaseOption;
     private Boolean cashOption;
@@ -32,6 +31,6 @@ public class Car {
     private Model model;
     @OneToOne(mappedBy = "car", cascade=CascadeType.ALL)
     private CarDetail carDetail;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Listing listing;
 }

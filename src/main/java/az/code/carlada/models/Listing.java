@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,18 +26,17 @@ public class Listing {
     private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    @OneToOne(mappedBy = "listing", cascade=CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonBackReference
+    @OneToOne(mappedBy = "listing", cascade = CascadeType.ALL)
     private Car car;
-    @JsonManagedReference
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name="appuser_id")
+    private AppUser appUser;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="city_id")
+    private City city;
     @OneToMany(mappedBy="listing"
             ,cascade = CascadeType.ALL)
     private List<Images> images;
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="city_id", nullable=false)
-    private City city;
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="appuser_id")
-    private AppUser appUser;
 }

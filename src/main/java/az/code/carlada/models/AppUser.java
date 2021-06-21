@@ -1,10 +1,8 @@
 package az.code.carlada.models;
 
-import az.code.carlada.models.Transaction;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -31,4 +29,6 @@ public class AppUser {
     @JsonManagedReference
     @OneToMany(mappedBy="appUser")
     private List<Listing> listings;
+    @OneToMany(mappedBy="appUser")
+    private List<Subscription> subscriptions;
 }
