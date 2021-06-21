@@ -4,17 +4,14 @@ package az.code.carlada.services;
 import az.code.carlada.dtos.ListingCreationDTO;
 import az.code.carlada.dtos.ListingGetDTO;
 import az.code.carlada.dtos.ListingListDTO;
-import az.code.carlada.models.Listing;
-import org.springframework.http.ResponseEntity;
-
-import java.util.List;
+import az.code.carlada.dtos.PaginationDTO;
 
 public interface ListingService {
-    List<ListingListDTO> getAllListing();
-    List<ListingListDTO> getAllVipListing();
+    PaginationDTO<ListingListDTO> getAllListing(Integer page, Integer count);
+    PaginationDTO<ListingListDTO> getAllVipListing(Integer page, Integer count);
     ListingGetDTO getListingById(Long id);
-    List<ListingListDTO> getAllListingBySlug(String username);
-    List<ListingListDTO> getAllListingByProfile();
+    PaginationDTO<ListingListDTO> getAllListingBySlug(String username, Integer page, Integer count);
+    PaginationDTO<ListingListDTO> getAllListingByProfile(Integer page, Integer count);
     ListingGetDTO getListingByIdByProfile(Long id);
     ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO);
     void delete(long id);
