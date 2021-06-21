@@ -22,7 +22,7 @@ public class UserController {
     }
 
     @GetMapping("/{slug}/listings")
-    public ResponseEntity<List<ListingListDTO>> getAllByAppUserUsername(@PathVariable String slug){
-        return new ResponseEntity(listingService.getAllListingBySlug(slug), HttpStatus.OK);
+    public ResponseEntity<List<ListingListDTO>> getAllByAppUserUsername(@PathVariable String slug, Integer page, Integer count){
+        return new ResponseEntity(listingService.getAllListingBySlug(slug, page, count), HttpStatus.OK);
     }
 }

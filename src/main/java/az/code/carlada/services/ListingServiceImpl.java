@@ -4,13 +4,14 @@ import az.code.carlada.daos.ListingDAO;
 import az.code.carlada.dtos.ListingCreationDTO;
 import az.code.carlada.dtos.ListingGetDTO;
 import az.code.carlada.dtos.ListingListDTO;
+import az.code.carlada.dtos.PaginationDTO;
 import az.code.carlada.enums.*;
-import az.code.carlada.exceptions.ListingNotFound;
 import az.code.carlada.models.*;
 import az.code.carlada.repositories.*;
 import az.code.carlada.utils.BasicUtil;
 import az.code.carlada.utils.ModelMapperUtil;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -41,13 +42,23 @@ public class ListingServiceImpl implements ListingService {
     }
 
     @Override
-    public List<ListingListDTO> getAllListing() {
-        return listingDAO.getAllListing().stream().map(i->mapperUtil.convertListingToListDto(i)).collect(Collectors.toList());
+    public PaginationDTO<ListingListDTO> getAllListing(Integer page, Integer count) {
+        Page<Listing> p = listingDAO.getAllListing(page, count);
+        List<ListingListDTO> listingListDTOS = p.getContent().stream()
+                .map(i -> mapperUtil.convertListingToListDto(i))
+                .collect(Collectors.toList());
+
+        return new PaginationDTO<>(p.hasNext(), p.hasPrevious(), p.getTotalPages(), p.getNumber(), p.getTotalElements(), listingListDTOS);
     }
 
     @Override
-    public List<ListingListDTO> getAllVipListing() {
-        return listingDAO.getAllVipListing().stream().map(i->mapperUtil.convertListingToListDto(i)).collect(Collectors.toList());
+    public PaginationDTO<ListingListDTO> getAllVipListing(Integer page, Integer count) {
+        Page<Listing> p = listingDAO.getAllVipListing(page, count);
+        List<ListingListDTO> listingListDTOS = p.getContent()
+                .stream().map(i -> mapperUtil.convertListingToListDto(i))
+                .collect(Collectors.toList());
+
+        return new PaginationDTO<>(p.hasNext(), p.hasPrevious(), p.getTotalPages(), p.getNumber(), p.getTotalElements(), listingListDTOS);
     }
 
     @Override
@@ -56,20 +67,24 @@ public class ListingServiceImpl implements ListingService {
     }
 
     @Override
-    public List<ListingListDTO> getAllListingBySlug(String username) {
-        return listingDAO.getAllListingByUsername(username).stream().map(i->mapperUtil.convertListingToListDto(i)).collect(Collectors.toList());
+    public PaginationDTO<ListingListDTO> getAllListingBySlug(String username, Integer page, Integer count) {
+        Page<Listing> p = listingDAO.getAllListingByUsername(username, page, count);
+        List<ListingListDTO> listingListDTOS = p.getContent().stream()
+                .map(i -> mapperUtil.convertListingToListDto(i))
+                .collect(Collectors.toList());
+        return new PaginationDTO<>(p.hasNext(), p.hasPrevious(), p.getTotalPages(), p.getNumber(), p.getTotalElements(), listingListDTOS);
     }
 
     @Override
-    public List<ListingListDTO> getAllListingByProfile() {
+    public PaginationDTO<ListingListDTO> getAllListingByProfile(Integer page, Integer count) {
         String username = "shafig";
-        return listingDAO.getAllListingByUsername(username).stream().map(i->mapperUtil.convertListingToListDto(i)).collect(Collectors.toList());
+        return getAllListingBySlug(username, page, count);
     }
 
     @Override
     public ListingGetDTO getListingByIdByProfile(Long id) {
         String username = "shafig";
-        return mapperUtil.convertListingToListingGetDto(listingDAO.getAllListingByUsernameById(username, id));
+        return mapperUtil.convertListingToListingGetDto(listingDAO.getListingByUsernameById(username, id));
     }
 
     @Override
@@ -98,6 +113,7 @@ public class ListingServiceImpl implements ListingService {
                 .carDetail(carDetail)
                 .build();
         Listing listing = Listing.builder()
+                .id(listingCreationDTO.getId())
                 .isActive(true)
                 .description(listingCreationDTO.getDescription())
                 .appUser(appUser)
@@ -117,6 +133,4 @@ public class ListingServiceImpl implements ListingService {
     public void delete(long id) {
         listingDAO.delete(id);
     }
-
-
 }

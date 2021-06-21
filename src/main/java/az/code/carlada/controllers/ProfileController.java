@@ -35,8 +35,8 @@ public class ProfileController {
     }
 
     @GetMapping("/listings")
-    public ResponseEntity<List<ListingListDTO>> getAllListingByProfile() {
-        return new ResponseEntity(listingService.getAllListingByProfile(), HttpStatus.OK);
+    public ResponseEntity<List<ListingListDTO>> getAllListingByProfile(@RequestParam Integer page, @RequestParam Integer count) {
+        return new ResponseEntity(listingService.getAllListingByProfile(page, count), HttpStatus.OK);
     }
 
     @PostMapping("/listings")
@@ -62,12 +62,12 @@ public class ProfileController {
     }
     @PutMapping("/listings/{listingId}/makevip")
     public ResponseEntity<TransactionListDTO> payForVipStatus(@PathVariable Long listingId){
-        String username = "igbal-hasanli";//check
+        String username = "shafig";//check
         return new ResponseEntity<>(profileService.payForVipStatus(listingId,username),HttpStatus.OK);
     }
     @PutMapping("/listings/{listingId}/makepaid")
     public ResponseEntity<TransactionListDTO> payForStandardStatus(@PathVariable Long listingId){
-        String username = "igbal-hasanli";//check
+        String username = "shafig";//check
         return new ResponseEntity<>(profileService.payForStandardStatus(listingId,username),HttpStatus.OK);
     }
     @GetMapping("/subscriptions")
