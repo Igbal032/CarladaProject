@@ -106,6 +106,8 @@ public class ListingServiceImpl implements ListingService {
                 .car(car)
                 .autoPay(listingCreationDTO.getAuto_pay())
                 .updatedAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
+                .expiredAt(LocalDateTime.now().plusDays(30))
                 .build();
         carDetail.setCar(car);
         car.setListing(listing);

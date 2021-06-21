@@ -1,6 +1,7 @@
 package az.code.carlada.services;
 
 import az.code.carlada.dtos.TimerInfoDTO;
+import az.code.carlada.jobs.AutoPaymentJob;
 import az.code.carlada.jobs.SubscriptionNotification;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
@@ -21,4 +22,13 @@ public class SchedulerExecutorServiceImpl implements SchedulerExecutorService {
                 .build();
         scheduler.schedule(SubscriptionNotification.class, infoDTO);
     }
+    @Bean
+    public void runAutoPaymentJob() {
+        TimerInfoDTO infoDTO = TimerInfoDTO.builder()
+                .runForever(true)
+                .repeatIntervalMS(2000)
+                .build();
+        scheduler.schedule(AutoPaymentJob.class, infoDTO);
+    }
+
 }

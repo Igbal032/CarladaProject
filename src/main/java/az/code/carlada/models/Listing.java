@@ -26,6 +26,7 @@ public class Listing {
     private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime expiredAt;
     @JsonBackReference
     @OneToOne(mappedBy = "listing", cascade = CascadeType.ALL)
     private Car car;
