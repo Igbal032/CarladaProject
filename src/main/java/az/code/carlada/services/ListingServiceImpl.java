@@ -1,11 +1,9 @@
 package az.code.carlada.services;
 
 import az.code.carlada.daos.ListingDAO;
-import az.code.carlada.dtos.ListingCreationDTO;
-import az.code.carlada.dtos.ListingGetDTO;
-import az.code.carlada.dtos.ListingListDTO;
-import az.code.carlada.dtos.PaginationDTO;
+import az.code.carlada.dtos.*;
 import az.code.carlada.enums.*;
+import az.code.carlada.exceptions.UserNotFound;
 import az.code.carlada.models.*;
 import az.code.carlada.repositories.*;
 import az.code.carlada.utils.BasicUtil;
@@ -16,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,7 +91,10 @@ public class ListingServiceImpl implements ListingService {
         Model model = modelRepository.getById(listingCreationDTO.getModelId());
         Make make = makeRepository.getById(listingCreationDTO.getMakeId());
         City city = cityRepository.getById(listingCreationDTO.getCityId());
-        AppUser appUser = userRepository.getAppUserByUsername("shafig").get();
+        Optional<AppUser> appUser = userRepository.getAppUserByUsername("igbal-hasanli");
+        if (appUser.isEmpty()){
+            throw new UserNotFound("User doesnt exists");
+        }
         model.setMake(make);
         CarDetail carDetail = CarDetail.builder()
                 .bodyType(BasicUtil.getEnumFromString(BodyType.class, listingCreationDTO.getBodyType()))
@@ -101,6 +103,7 @@ public class ListingServiceImpl implements ListingService {
                 .gearBox(BasicUtil.getEnumFromString(Gearbox.class, listingCreationDTO.getGearBox()))
                 .carSpecifications(specRepository.findAllById(listingCreationDTO.getCarSpecIds()))
                 .build();
+
         Car car = Car.builder()
                 .model(model)
                 .year(listingCreationDTO.getYear())
@@ -112,11 +115,14 @@ public class ListingServiceImpl implements ListingService {
                 .cashOption(listingCreationDTO.getCashOption())
                 .carDetail(carDetail)
                 .build();
+
+        System.out.println(listingCreationDTO.getAuto_pay());
+
         Listing listing = Listing.builder()
                 .id(listingCreationDTO.getId())
                 .isActive(true)
                 .description(listingCreationDTO.getDescription())
-                .appUser(appUser)
+                .appUser(appUser.get())
                 .type(BasicUtil.getEnumFromString(Status.class, listingCreationDTO.getType()))
                 .city(city)
                 .car(car)
@@ -135,4 +141,5 @@ public class ListingServiceImpl implements ListingService {
     public void delete(long id) {
         listingDAO.delete(id);
     }
+
 }

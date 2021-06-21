@@ -1,14 +1,18 @@
 package az.code.carlada.daos;
 
 import az.code.carlada.enums.Status;
+import az.code.carlada.enums.TransactionType;
 import az.code.carlada.exceptions.ListingNotFound;
 import az.code.carlada.models.Listing;
+import az.code.carlada.models.Transaction;
 import az.code.carlada.repositories.ListingRepo;
+import az.code.carlada.repositories.TransactionRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,9 +20,11 @@ import java.util.Optional;
 public class ListingDaoImpl implements ListingDAO {
 
     ListingRepo listingRepository;
+    TransactionRepo transactionRepo;
 
-    public ListingDaoImpl(ListingRepo listingRepository) {
+    public ListingDaoImpl(ListingRepo listingRepository,TransactionRepo transactionRepo) {
         this.listingRepository = listingRepository;
+        this.transactionRepo = transactionRepo;
     }
 
     @Override
@@ -59,7 +65,15 @@ public class ListingDaoImpl implements ListingDAO {
 
     @Override
     public Listing createListing(Listing listing) {
-        return listingRepository.save(listing);
+        Listing listing1 = listingRepository.save(listing);
+                transactionRepo.save(Transaction.builder()
+                .amount(Status.FREE.getStatusAmount())
+                .listingId(listing1.getId())
+                .createdDate(LocalDateTime.now())
+                .transactionType(TransactionType.NEW)
+                .appUser(listing.getAppUser())
+                .build());
+        return listing1;
     }
 
     @Override

@@ -31,7 +31,7 @@ public class AutoPaymentJob implements Job {
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         System.out.println("Checked");
         List<Listing> listings = listingRepo.findAll();
-        listings.stream().filter(l->l.getAutoPay()==true).forEach(w->{
+        listings.stream().filter(Listing::isActive).forEach(w->{
             AppUser user = w.getAppUser();
             LocalDateTime duration = w.getUpdatedAt().plusDays(30);
             LocalDateTime today = LocalDateTime.now();
