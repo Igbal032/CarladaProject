@@ -1,11 +1,11 @@
 package az.code.carlada.dtos;
 
+import lombok.Data;
 import az.code.carlada.enums.BodyType;
 import az.code.carlada.enums.Color;
 import az.code.carlada.enums.FuelType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;

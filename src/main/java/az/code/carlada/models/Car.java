@@ -1,11 +1,14 @@
 package az.code.carlada.models;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
 
-@Getter
-@Setter
+@Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,11 +25,12 @@ public class Car {
     private Boolean leaseOption;
     private Boolean cashOption;
     private Integer price;
-    @ManyToOne
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "model_id", nullable = false)
     private Model model;
-    @OneToOne(mappedBy = "car")
+    @OneToOne(mappedBy = "car", cascade=CascadeType.ALL)
     private CarDetail carDetail;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Listing listing;
 }

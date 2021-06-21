@@ -5,6 +5,11 @@ import az.code.carlada.enums.FuelType;
 import az.code.carlada.models.City;
 import az.code.carlada.models.Make;
 import az.code.carlada.models.Model;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import javax.persistence.EntityManager;
@@ -33,6 +38,7 @@ public class DictionaryImpl implements DictionaryDAO {
     public List<City> getCities() {
         return entityManager.createQuery("select c from City c", City.class).getResultList();
     }
+
 
     @Override
     public Set<FuelType> getFuelTypes() {

@@ -1,5 +1,6 @@
 package az.code.carlada.dtos;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,8 +9,8 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Data
-@Builder(toBuilder = true)
 @AllArgsConstructor
+@Builder(toBuilder = true)
 @NoArgsConstructor
 public class PaginationDTO<T> {
     private Boolean hasNext;

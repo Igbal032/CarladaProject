@@ -1,4 +1,7 @@
 package az.code.carlada.models;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,6 +19,7 @@ public class City {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String cityName;
+    @JsonManagedReference
     @OneToMany(mappedBy="city"
             ,cascade = CascadeType.ALL)
     private List<Listing> listings;

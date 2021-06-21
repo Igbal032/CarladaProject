@@ -1,24 +1,28 @@
 package az.code.carlada.controllers;
 
-import az.code.carlada.services.UserService;
+import az.code.carlada.dtos.ListingListDTO;
+import az.code.carlada.services.ListingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/profile")
+@RequestMapping(path = "/api/v1/user")
 public class UserController {
-    UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    ListingService listingService;
+
+    public UserController(ListingService listingService) {
+        this.listingService = listingService;
     }
 
-    @PutMapping("/wallet/increase")
-    public ResponseEntity<Double> wallet(@RequestParam Double amount){
-        String email = "igbal-hasanli";//check
-        Double userAmount = userService.addAmount(email,amount);
-        return new ResponseEntity<>(userAmount,HttpStatus.OK);
+    @GetMapping("/{slug}/listings")
+    public ResponseEntity<List<ListingListDTO>> getAllByAppUserUsername(@PathVariable String slug){
+        return new ResponseEntity(listingService.getAllListingBySlug(slug), HttpStatus.OK);
     }
-
 }

@@ -1,5 +1,6 @@
 package az.code.carlada.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 
 import javax.persistence.*;
@@ -18,11 +19,16 @@ public class AppUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
+    private String fullName;
     private String email;
-    private String phoneNumber;
+    private String phone;
     private Double amount;
+    @JsonManagedReference
     @OneToMany(mappedBy="appUser")
     private List<Transaction> transactions;
+    @JsonManagedReference
+    @OneToMany(mappedBy="appUser")
+    private List<Listing> listings;
     @OneToMany(mappedBy="appUser")
     private List<Subscription> subscriptions;
     @OneToMany(mappedBy="appUser")

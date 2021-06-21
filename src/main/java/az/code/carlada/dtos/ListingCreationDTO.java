@@ -1,8 +1,18 @@
 package az.code.carlada.dtos;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@Data
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class ListingCreationDTO {      // CREATE OLDUQDAN SONRA RESPONSE ListingGetDTO OLARAQ QAYIDACAQ
+    private Long id;
     private Long makeId;
     private Long modelId;
     private Integer year;
@@ -21,5 +31,5 @@ public class ListingCreationDTO {      // CREATE OLDUQDAN SONRA RESPONSE Listing
     private String description;
     private String type; //enum ->  new, standart, vip
     private String thumbnailUrl;
-    private List<Integer> carSpecIds;
+    private List<Long> carSpecIds;
 }

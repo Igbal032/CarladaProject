@@ -1,10 +1,8 @@
 package az.code.carlada.models;
-
 import az.code.carlada.enums.TransactionType;
 import lombok.*;
-
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -22,5 +20,7 @@ public class Transaction {
     @ManyToOne
     @JoinColumn(name="appuser_id", nullable=false)
     private AppUser appUser;
-    private LocalDate createdDate;
+    private Double amount;
+    private Long listingId;
+    private LocalDateTime createdDate;
 }
