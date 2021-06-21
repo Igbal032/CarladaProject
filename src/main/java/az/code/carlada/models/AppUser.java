@@ -31,6 +31,4 @@ public class AppUser {
     private List<Listing> listings;
     @OneToMany(mappedBy="appUser")
     private List<Subscription> subscriptions;
-    @OneToMany(mappedBy="appUser")
-    private List<Listing> listings;
 }
