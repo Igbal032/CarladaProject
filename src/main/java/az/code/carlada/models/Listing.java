@@ -35,4 +35,5 @@ public class Listing {
     @ManyToOne
     @JoinColumn(name="appuser_id", nullable=false)
     private AppUser appUser;
+
 }
