@@ -6,7 +6,6 @@ import az.code.carlada.dtos.MakeDTO;
 import az.code.carlada.dtos.ModelDTO;
 import az.code.carlada.enums.BodyType;
 import az.code.carlada.enums.FuelType;
-import az.code.carlada.utils.ModelMapperUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -17,35 +16,35 @@ import java.util.Set;
 public class DictionaryServiceImpl implements DictionaryService {
 
     DictionaryDAO dictionaryDAO;
-    ModelMapperUtil mapperUtil;
+    ModelMapperService mapperService;
 
-    public DictionaryServiceImpl(DictionaryDAO dictionaryDAO, ModelMapper modelMapper) {
+    public DictionaryServiceImpl(DictionaryDAO dictionaryDAO, ModelMapperService mapperService) {
         this.dictionaryDAO = dictionaryDAO;
-        this.mapperUtil = ModelMapperUtil.builder().modelMapper(modelMapper).build();
+        this.mapperService = mapperService;
     }
 
     @Override
     public List<MakeDTO> getMakes() {
-        return mapperUtil.mapList(dictionaryDAO.getMakes(), MakeDTO.class);
+        return mapperService.mapList(dictionaryDAO.getMakes(), MakeDTO.class);
     }
 
     @Override
     public List<ModelDTO> getModels(Long id) {
-        return mapperUtil.mapList(dictionaryDAO.getModels(id), ModelDTO.class);
+        return mapperService.mapList(dictionaryDAO.getModels(id), ModelDTO.class);
     }
 
     @Override
     public List<CityDTO> getCities() {
-        return mapperUtil.mapList(dictionaryDAO.getCities(), CityDTO.class);
+        return mapperService.mapList(dictionaryDAO.getCities(), CityDTO.class);
     }
 
     @Override
     public Set<FuelType> getFuelTypes() {
-        return mapperUtil.mapSet(dictionaryDAO.getFuelTypes(), FuelType.class);
+        return mapperService.mapSet(dictionaryDAO.getFuelTypes(), FuelType.class);
     }
 
     @Override
     public Set<BodyType> getBodyTypes() {
-        return mapperUtil.mapSet(dictionaryDAO.getBodyTypes(), BodyType.class);
+        return mapperService.mapSet(dictionaryDAO.getBodyTypes(), BodyType.class);
     }
 }
