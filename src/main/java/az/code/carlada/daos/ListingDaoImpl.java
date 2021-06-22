@@ -1,57 +1,54 @@
 package az.code.carlada.daos;
 
-import az.code.carlada.dtos.ListingCreationDTO;
-import az.code.carlada.dtos.ListingGetDTO;
-import az.code.carlada.dtos.ListingListDTO;
 import az.code.carlada.enums.Status;
+import az.code.carlada.enums.TransactionType;
 import az.code.carlada.exceptions.ListingNotFound;
 import az.code.carlada.models.Listing;
+import az.code.carlada.models.Transaction;
 import az.code.carlada.repositories.ListingRepo;
-import az.code.carlada.utils.ModelMapperUtil;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import az.code.carlada.repositories.TransactionRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Component
-public class ListingDaoImpl implements ListingDAO{
+public class ListingDAOImpl implements ListingDAO {
 
     ListingRepo listingRepository;
+    TransactionRepo transactionRepo;
 
-    public ListingDaoImpl(ListingRepo listingRepository) {
+    public ListingDAOImpl(ListingRepo listingRepository, TransactionRepo transactionRepo) {
         this.listingRepository = listingRepository;
-    }
-
-        @Override
-        public List<Listing> getAllListing() {
-            List<Listing> listings = listingRepository.findAll();
-            if(listings.isEmpty())
-                throw new ListingNotFound("List is empty");
-            return  listings;
-        }
-
-    @Override
-    public List<Listing> getAllVipListing() {
-        List<Listing> listings = listingRepository.getAllByTypeEquals(Status.VIP);
-        if(listings.isEmpty())
-            throw new ListingNotFound("List is empty");
-        return  listings;
+        this.transactionRepo = transactionRepo;
     }
 
     @Override
-    public List<Listing> getAllListingByUsername(String username) {
-        List<Listing> listings = listingRepository.getAllByAppUserUsername(username);
-        if(listings.isEmpty())
-            throw new ListingNotFound("List is empty");
-        return  listings;
+    public Page<Listing> getAllListing(Integer page, Integer count) {
+        Pageable pageable = PageRequest.of(page, count);
+        return listingRepository.findAll(pageable);
     }
 
     @Override
-    public Listing getAllListingByUsernameById(String username, Long id) {
+    public Page<Listing> getAllVipListing(Integer page, Integer count) {
+        Pageable pageable = PageRequest.of(page, count);
+        return listingRepository.getAllByTypeEquals(Status.VIP, pageable);
+    }
+
+    @Override
+    public Page<Listing> getAllListingByUsername(String username, Integer page, Integer count) {
+        Pageable pageable = PageRequest.of(page, count);
+        return listingRepository.getAllByAppUserUsername(username, pageable);
+    }
+
+    @Override
+    public Listing getListingByUsernameById(String username, Long id) {
         Listing listing = listingRepository.getListingByAppUserUsernameAndId(username, id);
-        if (listing==null){
+        if (listing == null) {
             throw new ListingNotFound("Not such a listing");
         }
         return listingRepository.getListingByAppUserUsernameAndId(username, id);
@@ -67,7 +64,15 @@ public class ListingDaoImpl implements ListingDAO{
 
     @Override
     public Listing createListing(Listing listing) {
-        return listingRepository.save(listing);
+        Listing listing1 = listingRepository.save(listing);
+                transactionRepo.save(Transaction.builder()
+                .amount(Status.FREE.getStatusAmount())
+                .listingId(listing1.getId())
+                .createdDate(LocalDateTime.now())
+                .transactionType(TransactionType.NEW)
+                .appUser(listing.getAppUser())
+                .build());
+        return listing1;
     }
 
     @Override

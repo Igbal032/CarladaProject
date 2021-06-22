@@ -8,7 +8,8 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,11 +22,12 @@ public class Listing {
     @Enumerated(EnumType.STRING)
     private Status type;
     private String thumbnailUrl;
-    private Boolean autoPay;
-    private Boolean isActive;
+    private boolean autoPay;
+    private boolean isActive;
     private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime expiredAt;
     @JsonBackReference
     @OneToOne(mappedBy = "listing", cascade = CascadeType.ALL)
     private Car car;

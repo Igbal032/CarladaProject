@@ -25,14 +25,14 @@ public class ListingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ListingListDTO>> getAllListing(){
-        return new ResponseEntity(listingService.getAllListing(), HttpStatus.OK);
+    public ResponseEntity<List<ListingListDTO>> getAllListing(@RequestParam Integer page, @RequestParam Integer count){
+        return new ResponseEntity(listingService.getAllListing(page, count), HttpStatus.OK);
     }
 
 
     @GetMapping("/vip")
-    public ResponseEntity<List<ListingListDTO>> getAllVipListing(){
-        return new ResponseEntity(listingService.getAllVipListing(), HttpStatus.OK);
+    public ResponseEntity<List<ListingListDTO>> getAllVipListing(@RequestParam Integer page, @RequestParam Integer count){
+        return new ResponseEntity(listingService.getAllVipListing(page, count), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
