@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.core.Response;
 import az.code.carlada.dtos.UserDTO;
+import az.code.carlada.services.AccountService;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.CreatedResponseUtil;
@@ -30,42 +31,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AccountController {
 
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    AccountService accountService;
 
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     @Value("${keycloak.auth-server-url}")
     private String authServerUrl;
     @Value("${keycloak.realm}")
     private String realm;
     @Value("${keycloak.resource}")
     private String clientId;
-    //Get client secret from the Keycloak admin console (in the credential tab)
     @Value("${keycloak.credentials.secret}")
     private String clientSecret;
-
-    /*
-    * CREATE NEW USER WITHOUT ROLE
-    * */
+    //CREATE NEW USER WITHOUT ROLE
     @PostMapping(path = "/create")
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
         Keycloak keycloak = KeycloakBuilder.builder().serverUrl(authServerUrl)
-                .username("ihasanli2021")
-                .password("12345")
-                .grantType(OAuth2Constants.PASSWORD).realm("master").clientId("admin-cli")
-                .username("ihasanli2021").password("12345")
+                .grantType(OAuth2Constants.PASSWORD).realm("master").clientId("admin-cli").username("ihasanli2021").password("12345")
                 .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
-        System.out.println(OAuth2Constants.PASSWORD);
         keycloak.tokenManager().getAccessToken();
-
-        UserRepresentation user = new UserRepresentation();
-        user.setEnabled(true);
-        user.setUsername(userDTO.getEmail());
-        user.setFirstName(userDTO.getFirstname());
-        user.setLastName(userDTO.getLastname());
-        user.setEmail(userDTO.getEmail());
-
-        /*
-        Get realm
-         */
+        //Call account service to save user
+        UserRepresentation user = accountService.user(userDTO);
+        System.out.println(user.getAttributes());
+        //Get realm
         RealmResource realmResource = keycloak.realm(realm);
         UsersResource usersRessource = realmResource.users();
 
@@ -85,13 +75,13 @@ public class AccountController {
             UserResource userResource = usersRessource.get(userId);
             // Set password credential
             userResource.resetPassword(passwordCred);
+            UserDTO newUser = accountService.createUser(userDTO);
         }
         return ResponseEntity.ok(userDTO);
     }
 
     @PostMapping(path = "/signin")
     public ResponseEntity<?> signin(@RequestBody UserDTO userDTO) {
-
         Map<String, Object> clientCredentials = new HashMap<>();
         clientCredentials.put("secret", clientSecret);
         clientCredentials.put("grant_type", "password");

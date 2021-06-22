@@ -17,5 +17,4 @@ public class BasicUtil {
             return null;
         }
     }
-
 }
