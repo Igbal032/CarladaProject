@@ -1,11 +1,11 @@
-package az.code.carlada.services;
+package az.code.carlada.components;
 
 import az.code.carlada.enums.BodyType;
 import az.code.carlada.enums.FuelType;
 import az.code.carlada.models.Listing;
 import org.springframework.data.jpa.domain.Specification;
 
-public interface SearchSpecificationService {
+public interface ListingSpecificationComponent {
     Specification<Listing> equalMake(Long id);
 
     Specification<Listing> equalModel(Long id);

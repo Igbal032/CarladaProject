@@ -3,8 +3,6 @@ package az.code.carlada.daos;
 import az.code.carlada.models.Listing;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface ListingDAO {
 
     Page<Listing> getAllListing(Integer page,Integer count);

@@ -6,65 +6,33 @@ import az.code.carlada.exceptions.SubscriptionNotFound;
 import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Subscription;
 import az.code.carlada.repositories.*;
-import az.code.carlada.services.ModelMapperService;
-import org.modelmapper.ModelMapper;
+import az.code.carlada.components.ModelMapperComponent;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 public class SubscriptionDAOImpl implements SubscriptionDAO {
     SubscriptionRepo subRepo;
-    ModelMapperService mapperService;
-    CityRepo cityRepo;
-    ModelRepo modelRepo;
-    MakeRepo makeRepo;
-    SpecificationRepo specRepo;
+    ModelMapperComponent mapperService;
 
-    public SubscriptionDAOImpl(SubscriptionRepo subRepo, ModelMapperService mapperService, CityRepo cityRepo, ModelRepo modelRepo, MakeRepo makeRepo, SpecificationRepo specRepo) {
+    public SubscriptionDAOImpl(SubscriptionRepo subRepo, ModelMapperComponent mapperService) {
         this.subRepo = subRepo;
         this.mapperService = mapperService;
-        this.cityRepo = cityRepo;
-        this.modelRepo = modelRepo;
-        this.makeRepo = makeRepo;
-        this.specRepo = specRepo;
     }
 
     @Override
     public Subscription saveSubscription(SubscriptionDTO s, AppUser appUser) {
-        if (s.getSubId() != null) checkSubscription(s.getSubId(), appUser);
-
         Subscription sub = mapperService.convertDTOToSubscription(s);
-
-        if (s.getCityId() != null){
-            if(cityRepo.findById(s.getCityId()).isEmpty())
-                throw new DataNotFound("City couldn't found for given id");
-
-            sub.setCity(cityRepo.findById(s.getCityId()).get());
+        if (s.getSubId() != null) {
+            sub.setCreationDate(getSubscription(s.getSubId(), appUser).getCreationDate());
+            return subRepo.save(sub);
         }
-
-        if (s.getMakeId() != null) {
-            if(makeRepo.findById(s.getMakeId()).isEmpty())
-            throw new DataNotFound("Make couldn't found for given id");
-        }
-
-        if (s.getModelId() != null){
-            if(modelRepo.findById(s.getModelId()).isEmpty())
-                throw new DataNotFound("Model couldn't found for given id");
-
-            sub.setModel(modelRepo.findById(s.getModelId()).get());
-        }
-
-        if (s.getSpecs() != null) {
-            s.getSpecs().forEach(i -> {
-                if (specRepo.findById(i).isEmpty())
-                    throw new DataNotFound("Specifications couldn't found for given id");
-            });
-            sub.setSpecs(specRepo.findAllById(s.getSpecs()));
-        }
-
         return subRepo.save(sub.toBuilder()
                 .appUser(appUser)
+                .creationDate(LocalDateTime.now())
                 .build());
     }
 
@@ -80,23 +48,15 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
 
     @Override
     public Subscription getSubscription(Long id, AppUser appUser) {
-        if (subRepo.findSubscriptionBySubIdAndAppUser(id, appUser).isEmpty())
+        Optional<Subscription> subscription = subRepo.findSubscriptionBySubIdAndAppUser(id, appUser);
+        if (subscription.isEmpty())
             throw new SubscriptionNotFound("Subscription for given id couldn't found");
 
-        return subRepo.findSubscriptionBySubIdAndAppUser(id, appUser).get();
+        return subscription.get();
     }
 
     @Override
-    public Boolean checkSubscription(Long id, AppUser appUser) {
-        if (!subRepo.existsSubscriptionBySubIdAndAppUser(id, appUser))
-            throw new SubscriptionNotFound("Subscription for given id couldn't found");
-
-        return true;
-    }
-
-    @Override
-    public void disableSubscription(Long id, AppUser appUser) {
-        checkSubscription(id, appUser);
-        subRepo.deleteById(id);
+    public void deleteSubscription(Long id, AppUser appUser) {
+        subRepo.delete(getSubscription(id, appUser));
     }
 }

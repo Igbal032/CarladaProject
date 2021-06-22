@@ -23,6 +23,4 @@ public class Model {
     private Make make;
     @OneToMany(mappedBy="model")
     private List<Car> cars;
-    @OneToMany(mappedBy="model")
-    private List<Subscription> subscriptions;
 }
