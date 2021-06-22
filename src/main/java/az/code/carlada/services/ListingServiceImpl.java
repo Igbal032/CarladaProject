@@ -22,22 +22,12 @@ public class ListingServiceImpl implements ListingService {
 
     ListingDAO listingDAO;
     ModelMapperUtil mapperUtil;
-    ListingRepo listingRepository;
-    ModelRepo modelRepository;
-    MakeRepo makeRepository;
-    CityRepo cityRepository;
-    SpecificationRepo specRepository;
-    UserRepo userRepository;
+
 
     public ListingServiceImpl(ListingDAO listingDAO, ModelMapper modelMapper, ModelRepo modelRepository, ListingRepo listingRepository, MakeRepo makeRepository, CityRepo cityRepository, SpecificationRepo specRepository, UserRepo userRepository) {
         this.listingDAO = listingDAO;
         this.mapperUtil = ModelMapperUtil.builder().modelMapper(modelMapper).build();
-        this.listingRepository = listingRepository;
-        this.modelRepository = modelRepository;
-        this.makeRepository = makeRepository;
-        this.cityRepository = cityRepository;
-        this.specRepository = specRepository;
-        this.userRepository = userRepository;
+
     }
 
     @Override
@@ -88,24 +78,24 @@ public class ListingServiceImpl implements ListingService {
 
     @Override
     public ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO) {
-        Model model = modelRepository.getById(listingCreationDTO.getModelId());
-        Make make = makeRepository.getById(listingCreationDTO.getMakeId());
-        City city = cityRepository.getById(listingCreationDTO.getCityId());
-        Optional<AppUser> appUser = userRepository.getAppUserByUsername("igbal-hasanli");
+        Optional<Model> model = listingDAO.getModelById(listingCreationDTO.getModelId());
+        Optional<Make> make = listingDAO.getMakeById(listingCreationDTO.getMakeId());
+        Optional<City> city = listingDAO.getCityById(listingCreationDTO.getCityId());
+        Optional<AppUser> appUser = listingDAO.getUserByUsername("shafig");
         if (appUser.isEmpty()){
             throw new UserNotFound("User doesnt exists");
         }
-        model.setMake(make);
+        model.get().setMake(make.get());
         CarDetail carDetail = CarDetail.builder()
                 .bodyType(BasicUtil.getEnumFromString(BodyType.class, listingCreationDTO.getBodyType()))
                 .color(BasicUtil.getEnumFromString(Color.class, listingCreationDTO.getColor()))
                 .fuelType(BasicUtil.getEnumFromString(FuelType.class, listingCreationDTO.getFuelType()))
                 .gearBox(BasicUtil.getEnumFromString(Gearbox.class, listingCreationDTO.getGearBox()))
-                .carSpecifications(specRepository.findAllById(listingCreationDTO.getCarSpecIds()))
+                .carSpecifications(listingDAO.getAllSpecsById(listingCreationDTO.getCarSpecIds()))
                 .build();
 
         Car car = Car.builder()
-                .model(model)
+                .model(model.get())
                 .year(listingCreationDTO.getYear())
                 .price(listingCreationDTO.getPrice())
                 .mileage(listingCreationDTO.getMileage())
@@ -124,7 +114,7 @@ public class ListingServiceImpl implements ListingService {
                 .description(listingCreationDTO.getDescription())
                 .appUser(appUser.get())
                 .type(BasicUtil.getEnumFromString(Status.class, listingCreationDTO.getType()))
-                .city(city)
+                .city(city.get())
                 .car(car)
                 .autoPay(listingCreationDTO.getAuto_pay())
                 .updatedAt(LocalDateTime.now())

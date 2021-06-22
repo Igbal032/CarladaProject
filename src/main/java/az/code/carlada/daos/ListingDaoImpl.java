@@ -3,10 +3,8 @@ package az.code.carlada.daos;
 import az.code.carlada.enums.Status;
 import az.code.carlada.enums.TransactionType;
 import az.code.carlada.exceptions.ListingNotFound;
-import az.code.carlada.models.Listing;
-import az.code.carlada.models.Transaction;
-import az.code.carlada.repositories.ListingRepo;
-import az.code.carlada.repositories.TransactionRepo;
+import az.code.carlada.models.*;
+import az.code.carlada.repositories.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,10 +19,20 @@ public class ListingDaoImpl implements ListingDAO {
 
     ListingRepo listingRepository;
     TransactionRepo transactionRepo;
+    ModelRepo modelRepository;
+    MakeRepo makeRepository;
+    CityRepo cityRepository;
+    SpecificationRepo specRepository;
+    UserRepo userRepository;
 
-    public ListingDaoImpl(ListingRepo listingRepository,TransactionRepo transactionRepo) {
+    public ListingDaoImpl(ListingRepo listingRepository, TransactionRepo transactionRepo, ModelRepo modelRepository, MakeRepo makeRepository, CityRepo cityRepository, SpecificationRepo specRepository, UserRepo userRepository) {
         this.listingRepository = listingRepository;
         this.transactionRepo = transactionRepo;
+        this.modelRepository = modelRepository;
+        this.makeRepository = makeRepository;
+        this.cityRepository = cityRepository;
+        this.specRepository = specRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -56,9 +64,10 @@ public class ListingDaoImpl implements ListingDAO {
 
     @Override
     public Listing getListingById(Long id) {
+
         Optional<Listing> listing = listingRepository.findById(id);
         System.out.println(listing);
-        if (!listing.isPresent())
+        if (listing.isEmpty())
             throw new ListingNotFound("Not such a listing");
         return listing.get();
     }
@@ -78,9 +87,34 @@ public class ListingDaoImpl implements ListingDAO {
 
     @Override
     public void delete(long id) {
-        if (!listingRepository.findById(id).isPresent())
+        if (listingRepository.findById(id).isEmpty())
             throw new ListingNotFound("Not such a listing");
         else
             listingRepository.deleteById(id);
+    }
+
+    @Override
+    public Optional<Model> getModelById(Long id){
+        return modelRepository.findById(id);
+    }
+
+    @Override
+    public Optional<Make> getMakeById(Long id) {
+        return makeRepository.findById(id);
+    }
+
+    @Override
+    public Optional<City> getCityById(Long id) {
+        return cityRepository.findById(id);
+    }
+
+    @Override
+    public Optional<AppUser> getUserByUsername(String username) {
+        return userRepository.getAppUserByUsername(username);
+    }
+
+    @Override
+    public List<Specification> getAllSpecsById(Iterable<Long> id) {
+        return specRepository.findAllById(id);
     }
 }
