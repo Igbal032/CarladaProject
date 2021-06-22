@@ -1,14 +1,14 @@
 package az.code.carlada.services;
 
+import az.code.carlada.components.ModelMapperComponent;
 import az.code.carlada.daos.SubscriptionDAO;
 import az.code.carlada.daos.UserDAO;
 import az.code.carlada.dtos.SubscriptionDTO;
 import az.code.carlada.dtos.SubscriptionListDTO;
 import az.code.carlada.models.AppUser;
-import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,20 +16,15 @@ import java.util.stream.Collectors;
 public class SubscriptionServiceImpl implements SubscriptionService {
     SubscriptionDAO subDAO;
     AppUser appUser;
-    ModelMapperService mapperService;
+    ModelMapperComponent mapperService;
     UserDAO userDAO;
 
-    public SubscriptionServiceImpl(SubscriptionDAO subDAO, ModelMapperService mapperService, UserDAO userDAO) {
+    public SubscriptionServiceImpl(SubscriptionDAO subDAO, ModelMapperComponent mapperService, UserDAO userDAO) {
         this.subDAO = subDAO;
         this.mapperService = mapperService;
         this.userDAO = userDAO;
     }
 
-    @PostConstruct
-    public void init() {
-        String username = "igbal-hasanli";
-        this.appUser = userDAO.getUserByUsername(username);
-    }
 
     @Override
     public SubscriptionListDTO saveSubscription(SubscriptionDTO subDTO) {
@@ -50,7 +45,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
-    public void disableSubscription(Long id) {
-        subDAO.disableSubscription(id, appUser);
+    public void deleteSubscription(Long id) {
+        subDAO.deleteSubscription(id, appUser);
     }
 }

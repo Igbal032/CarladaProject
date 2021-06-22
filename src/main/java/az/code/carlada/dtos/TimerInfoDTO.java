@@ -1,5 +1,6 @@
 package az.code.carlada.dtos;
 
+import az.code.carlada.models.Listing;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,10 +10,10 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class TimerInfoDTO {
+public class TimerInfoDTO <T>{
     private int totalFireCount;
     private boolean runForever;
     private long repeatIntervalMS;
     private long initialOffsetMS;
-    private String callbackData;
+    private T callbackData;
 }

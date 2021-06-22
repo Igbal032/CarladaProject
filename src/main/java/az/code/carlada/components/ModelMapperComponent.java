@@ -1,15 +1,18 @@
-package az.code.carlada.services;
+package az.code.carlada.components;
 
 
+import az.code.carlada.daos.DictionaryDAO;
 import az.code.carlada.dtos.*;
 import az.code.carlada.enums.BodyType;
 import az.code.carlada.enums.Color;
 import az.code.carlada.enums.FuelType;
 import az.code.carlada.enums.Status;
+import az.code.carlada.exceptions.DataNotFound;
 import az.code.carlada.models.Listing;
 import az.code.carlada.models.Subscription;
 import lombok.Builder;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,19 +23,28 @@ import java.util.stream.Collectors;
 
 import static az.code.carlada.utils.BasicUtil.getEnumFromString;
 
-@Service
-public class ModelMapperService {
+@Component
+public class ModelMapperComponent {
     public ModelMapper modelMapper;
+    public DictionaryDAO dictionaryDAO;
 
-    public ModelMapperService(ModelMapper modelMapper) {
+    public ModelMapperComponent(ModelMapper modelMapper, DictionaryDAO dictionaryDAO) {
         this.modelMapper = modelMapper;
+        this.dictionaryDAO = dictionaryDAO;
     }
 
     public <E, T> List<T> mapList(Collection<? extends E> list, Class<T> type) {
+        if (list == null) return null;
         return list.stream().map(i -> modelMapper.map(i, type)).collect(Collectors.toList());
     }
 
+    public <E, T> T map(E item, Class<T> type) {
+        if (item == null) return null;
+        return modelMapper.map(item, type);
+    }
+
     public <E, T> Set<T> mapSet(Collection<? extends E> list, Class<T> type) {
+        if (list == null) return null;
         return list.stream().map(i -> modelMapper.map(i, type)).collect(Collectors.toSet());
     }
 
@@ -60,8 +72,8 @@ public class ModelMapperService {
                 .autoPay(i.isAutoPay())
                 .carSpecs(mapList(i.getCar().getCarDetail().getCarSpecifications(), CarSpecDTO.class))
                 .bodyType(i.getCar().getCarDetail().getBodyType().name())
-                .user(modelMapper.map(i.getAppUser(), AppUserDTO.class))
-                .city(modelMapper.map(i.getCity(), CityDTO.class))
+                .user(map(i.getAppUser(), AppUserDTO.class))
+                .city(map(i.getCity(), CityDTO.class))
                 .color(i.getCar().getCarDetail().getColor().toString())
                 .cashOption(i.getCar().getCashOption())
                 .creditOption(i.getCar().getLoanOption())
@@ -69,8 +81,8 @@ public class ModelMapperService {
                 .fuelType(i.getCar().getCarDetail().getFuelType().toString())
                 .description(i.getDescription())
                 .gearBox(i.getCar().getCarDetail().getGearBox().toString())
-                .model(modelMapper.map(i.getCar().getModel(), ModelDTO.class))
-                .make(modelMapper.map(i.getCar().getModel().getMake(), MakeDTO.class))
+                .model(map(i.getCar().getModel(), ModelDTO.class))
+                .make(map(i.getCar().getModel().getMake(), MakeDTO.class))
                 .isActive(i.isActive())
                 .leaseOption(i.getCar().getLeaseOption())
                 .mileage(i.getCar().getMileage())
@@ -95,6 +107,10 @@ public class ModelMapperService {
         return Subscription.builder()
                 .name(s.getName())
                 .subId(s.getSubId())
+                .make(dictionaryDAO.findMakeById(s.getMakeId()))
+                .model(dictionaryDAO.findModelById(s.getModelId()))
+                .city(dictionaryDAO.findCityById(s.getCityId()))
+                .specs(dictionaryDAO.findAllSpecificationById(s.getSpecs()))
                 .bodyType(getEnumFromString(BodyType.class, s.getBodyType()))
                 .fuelType(getEnumFromString(FuelType.class, s.getFuelType()))
                 .color(getEnumFromString(Color.class, s.getColor()))
@@ -102,7 +118,6 @@ public class ModelMapperService {
                 .loanOption(s.getLoanOption())
                 .leaseOption(s.getLeaseOption())
                 .cashOption(s.getCashOption())
-                .creationDate(LocalDateTime.now())
                 .minPrice(s.getMinPrice())
                 .maxPrice(s.getMaxPrice())
                 .minYear(s.getMinYear())
@@ -122,20 +137,15 @@ public class ModelMapperService {
                 .color(s.getColor())
                 .barterOption(s.getBarterOption())
                 .loanOption(s.getLoanOption()).leaseOption(s.getLeaseOption())
-                .cashOption(s.getCashOption()).creationDate(LocalDateTime.now())
+                .cashOption(s.getCashOption()).creationDate(s.getCreationDate())
                 .minPrice(s.getMinPrice()).maxPrice(s.getMaxPrice())
                 .minYear(s.getMinYear()).maxYear(s.getMaxYear())
                 .minMileage(s.getMinMileage()).maxMileage(s.getMaxMileage())
                 .build();
-
-        if (s.getSpecs() != null)
-            sub.setSpecs(mapList(s.getSpecs(), CarSpecDTO.class));
-        if (s.getCity() != null)
-            sub.setCity(modelMapper.map(s.getCity(), CityDTO.class));
-        if (s.getModel() != null)
-            sub.setModel(modelMapper.map(s.getModel(), ModelDTO.class));
-        if (s.getModel() != null && s.getModel().getMake() != null)
-            sub.setMake(modelMapper.map(s.getModel().getMake(), MakeDTO.class));
+        sub.setSpecs(mapList(s.getSpecs(), CarSpecDTO.class));
+        sub.setCity(map(s.getCity(), CityDTO.class));
+        sub.setModel(map(s.getModel(), ModelDTO.class));
+        sub.setMake(map(s.getMake(), MakeDTO.class));
 
         return sub;
     }

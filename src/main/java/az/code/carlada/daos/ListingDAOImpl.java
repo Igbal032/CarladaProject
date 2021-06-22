@@ -13,16 +13,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Component
-public class ListingDaoImpl implements ListingDAO {
+public class ListingDAOImpl implements ListingDAO {
 
     ListingRepo listingRepository;
     TransactionRepo transactionRepo;
 
-    public ListingDaoImpl(ListingRepo listingRepository,TransactionRepo transactionRepo) {
+    public ListingDAOImpl(ListingRepo listingRepository, TransactionRepo transactionRepo) {
         this.listingRepository = listingRepository;
         this.transactionRepo = transactionRepo;
     }
@@ -57,8 +56,7 @@ public class ListingDaoImpl implements ListingDAO {
     @Override
     public Listing getListingById(Long id) {
         Optional<Listing> listing = listingRepository.findById(id);
-        System.out.println(listing);
-        if (!listing.isPresent())
+        if (listing.isEmpty())
             throw new ListingNotFound("Not such a listing");
         return listing.get();
     }
@@ -66,7 +64,7 @@ public class ListingDaoImpl implements ListingDAO {
     @Override
     public Listing createListing(Listing listing) {
         Listing listing1 = listingRepository.save(listing);
-                transactionRepo.save(Transaction.builder()
+        transactionRepo.save(Transaction.builder()
                 .amount(Status.FREE.getStatusAmount())
                 .listingId(listing1.getId())
                 .createdDate(LocalDateTime.now())
@@ -77,8 +75,13 @@ public class ListingDaoImpl implements ListingDAO {
     }
 
     @Override
+    public void saveListing(Listing listing) {
+        listingRepository.save(listing);
+    }
+
+    @Override
     public void delete(long id) {
-        if (!listingRepository.findById(id).isPresent())
+        if (listingRepository.findById(id).isEmpty())
             throw new ListingNotFound("Not such a listing");
         else
             listingRepository.deleteById(id);

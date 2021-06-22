@@ -10,5 +10,6 @@ import java.util.List;
 
 public interface SearchDAO {
     List<Listing> searchAllListings(Subscription sub);
+    List<Subscription> searchAllSubscriptions(Listing list);
     Page<Listing> searchListingsByPage(SearchDTO params);
 }
