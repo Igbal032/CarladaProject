@@ -21,6 +21,4 @@ public class Make {
     @OneToMany(mappedBy="make"
             ,cascade = CascadeType.ALL)
     private List<Model> models;
-    @OneToMany(mappedBy="model")
-    private List<Subscription> subscriptions;
 }

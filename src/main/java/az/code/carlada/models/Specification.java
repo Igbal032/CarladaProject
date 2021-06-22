@@ -15,7 +15,6 @@ public class Specification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String specificationName;
     private String name;
     @ManyToMany(mappedBy = "carSpecifications",cascade = CascadeType.PERSIST)
     private List<CarDetail> carDetails;

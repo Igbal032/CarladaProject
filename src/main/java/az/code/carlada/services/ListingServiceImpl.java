@@ -1,42 +1,36 @@
 package az.code.carlada.services;
 
+import az.code.carlada.components.ModelMapperComponent;
+import az.code.carlada.configs.SchedulerExecutorConfig;
+import az.code.carlada.daos.DictionaryDAO;
 import az.code.carlada.daos.ListingDAO;
+import az.code.carlada.daos.UserDAO;
 import az.code.carlada.dtos.*;
 import az.code.carlada.enums.*;
-import az.code.carlada.exceptions.UserNotFound;
 import az.code.carlada.models.*;
-import az.code.carlada.repositories.*;
 import az.code.carlada.utils.BasicUtil;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ListingServiceImpl implements ListingService {
 
     ListingDAO listingDAO;
-    ModelMapperService mapperService;
-    ListingRepo listingRepository;
-    ModelRepo modelRepository;
-    MakeRepo makeRepository;
-    CityRepo cityRepository;
-    SpecificationRepo specRepository;
-    UserRepo userRepository;
+    ModelMapperComponent mapperService;
+    DictionaryDAO dictionaryDAO;
+    UserDAO userDAO;
+    SchedulerExecutorConfig schExecService;
 
-    public ListingServiceImpl(ListingDAO listingDAO, ModelMapperService mapperService, ListingRepo listingRepository, ModelRepo modelRepository, MakeRepo makeRepository, CityRepo cityRepository, SpecificationRepo specRepository, UserRepo userRepository) {
+    public ListingServiceImpl(ListingDAO listingDAO, ModelMapperComponent mapperService, DictionaryDAO dictionaryDAO, UserDAO userDAO, SchedulerExecutorConfig schExecService) {
         this.listingDAO = listingDAO;
         this.mapperService = mapperService;
-        this.listingRepository = listingRepository;
-        this.modelRepository = modelRepository;
-        this.makeRepository = makeRepository;
-        this.cityRepository = cityRepository;
-        this.specRepository = specRepository;
-        this.userRepository = userRepository;
+        this.dictionaryDAO = dictionaryDAO;
+        this.userDAO = userDAO;
+        this.schExecService = schExecService;
     }
 
     @Override
@@ -87,20 +81,18 @@ public class ListingServiceImpl implements ListingService {
 
     @Override
     public ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO) {
-        Model model = modelRepository.getById(listingCreationDTO.getModelId());
-        Make make = makeRepository.getById(listingCreationDTO.getMakeId());
-        City city = cityRepository.getById(listingCreationDTO.getCityId());
-        Optional<AppUser> appUser = userRepository.getAppUserByUsername("igbal-hasanli");
-        if (appUser.isEmpty()){
-            throw new UserNotFound("User doesnt exists");
-        }
+        Model model = dictionaryDAO.findModelById(listingCreationDTO.getModelId());
+        Make make = dictionaryDAO.findMakeById(listingCreationDTO.getMakeId());
+        City city = dictionaryDAO.findCityById(listingCreationDTO.getCityId());
+        AppUser appUser = userDAO.getUserByUsername("elgunvm");
+
         model.setMake(make);
         CarDetail carDetail = CarDetail.builder()
                 .bodyType(BasicUtil.getEnumFromString(BodyType.class, listingCreationDTO.getBodyType()))
                 .color(BasicUtil.getEnumFromString(Color.class, listingCreationDTO.getColor()))
                 .fuelType(BasicUtil.getEnumFromString(FuelType.class, listingCreationDTO.getFuelType()))
                 .gearBox(BasicUtil.getEnumFromString(Gearbox.class, listingCreationDTO.getGearBox()))
-                .carSpecifications(specRepository.findAllById(listingCreationDTO.getCarSpecIds()))
+                .carSpecifications(dictionaryDAO.findAllSpecificationById(listingCreationDTO.getCarSpecIds()))
                 .build();
 
         Car car = Car.builder()
@@ -115,13 +107,11 @@ public class ListingServiceImpl implements ListingService {
                 .carDetail(carDetail)
                 .build();
 
-        System.out.println(listingCreationDTO.getAuto_pay());
-
         Listing listing = Listing.builder()
                 .id(listingCreationDTO.getId())
                 .isActive(true)
                 .description(listingCreationDTO.getDescription())
-                .appUser(appUser.get())
+                .appUser(appUser)
                 .type(BasicUtil.getEnumFromString(Status.class, listingCreationDTO.getType()))
                 .city(city)
                 .car(car)
@@ -132,8 +122,9 @@ public class ListingServiceImpl implements ListingService {
                 .build();
         carDetail.setCar(car);
         car.setListing(listing);
-        listingDAO.createListing(listing);
-        return mapperService.convertListingToListingGetDto(listing);
+        Listing list = listingDAO.createListing(listing);
+        schExecService.runSubscriptionJob(list);
+        return mapperService.convertListingToListingGetDto(list);
     }
 
     @Override

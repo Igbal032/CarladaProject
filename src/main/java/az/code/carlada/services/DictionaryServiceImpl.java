@@ -1,12 +1,12 @@
 package az.code.carlada.services;
 
+import az.code.carlada.components.ModelMapperComponent;
 import az.code.carlada.daos.DictionaryDAO;
 import az.code.carlada.dtos.CityDTO;
 import az.code.carlada.dtos.MakeDTO;
 import az.code.carlada.dtos.ModelDTO;
 import az.code.carlada.enums.BodyType;
 import az.code.carlada.enums.FuelType;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,9 +16,9 @@ import java.util.Set;
 public class DictionaryServiceImpl implements DictionaryService {
 
     DictionaryDAO dictionaryDAO;
-    ModelMapperService mapperService;
+    ModelMapperComponent mapperService;
 
-    public DictionaryServiceImpl(DictionaryDAO dictionaryDAO, ModelMapperService mapperService) {
+    public DictionaryServiceImpl(DictionaryDAO dictionaryDAO, ModelMapperComponent mapperService) {
         this.dictionaryDAO = dictionaryDAO;
         this.mapperService = mapperService;
     }
