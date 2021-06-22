@@ -28,7 +28,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @PostConstruct
     public void init() {
-        String username = "igbal-hasanli";
+        String username = "shafig";
         this.appUser = userDAO.getUserByUsername(username);
     }
 

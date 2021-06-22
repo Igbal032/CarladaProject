@@ -33,10 +33,10 @@ public class SubscriptionNotification implements Job {
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
-        List<AppUser> appUsers = subDAO.getAllSubscriptions().stream().parallel()
-                .flatMap(i -> searchDAO.searchAllListings(i).stream())
-                .peek(System.out::println)
-                .map(Listing::getAppUser)
-                .collect(Collectors.toList());
+//        List<AppUser> appUsers = subDAO.getAllSubscriptions().stream().parallel()
+//                .flatMap(i -> searchDAO.searchAllListings(i).stream())
+//                .peek(System.out::println)
+//                .map(Listing::getAppUser)
+//                .collect(Collectors.toList());
     }
 }
