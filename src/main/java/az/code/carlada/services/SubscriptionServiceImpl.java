@@ -5,7 +5,6 @@ import az.code.carlada.daos.UserDAO;
 import az.code.carlada.dtos.SubscriptionDTO;
 import az.code.carlada.dtos.SubscriptionListDTO;
 import az.code.carlada.models.AppUser;
-import az.code.carlada.utils.ModelMapperUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +16,12 @@ import java.util.stream.Collectors;
 public class SubscriptionServiceImpl implements SubscriptionService {
     SubscriptionDAO subDAO;
     AppUser appUser;
-    ModelMapperUtil mapperUtil;
+    ModelMapperService mapperService;
     UserDAO userDAO;
 
-    public SubscriptionServiceImpl(SubscriptionDAO subDAO, ModelMapper modelMapper, UserDAO userDAO) {
+    public SubscriptionServiceImpl(SubscriptionDAO subDAO, ModelMapperService mapperService, UserDAO userDAO) {
         this.subDAO = subDAO;
-        this.mapperUtil = ModelMapperUtil.builder().modelMapper(modelMapper).build();
+        this.mapperService = mapperService;
         this.userDAO = userDAO;
     }
 
@@ -34,20 +33,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     @Override
     public SubscriptionListDTO saveSubscription(SubscriptionDTO subDTO) {
-        return mapperUtil.convertSubscriptionToListDTO(subDAO.saveSubscription(subDTO, appUser));
+        return mapperService.convertSubscriptionToListDTO(subDAO.saveSubscription(subDTO, appUser));
     }
 
     @Override
     public List<SubscriptionListDTO> getSubscriptions() {
         return subDAO.getSubscriptions(appUser)
                 .stream()
-                .map(i -> mapperUtil.convertSubscriptionToListDTO(i))
+                .map(i -> mapperService.convertSubscriptionToListDTO(i))
                 .collect(Collectors.toList());
     }
 
     @Override
     public SubscriptionListDTO getSubscriptionById(Long id) {
-        return mapperUtil.convertSubscriptionToListDTO(subDAO.getSubscription(id, appUser));
+        return mapperService.convertSubscriptionToListDTO(subDAO.getSubscription(id, appUser));
     }
 
     @Override

@@ -1,4 +1,4 @@
-package az.code.carlada.utils;
+package az.code.carlada.services;
 
 
 import az.code.carlada.dtos.*;
@@ -10,6 +10,7 @@ import az.code.carlada.models.Listing;
 import az.code.carlada.models.Subscription;
 import lombok.Builder;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -19,10 +20,13 @@ import java.util.stream.Collectors;
 
 import static az.code.carlada.utils.BasicUtil.getEnumFromString;
 
-@Builder
-public class ModelMapperUtil {
+@Service
+public class ModelMapperService {
     public ModelMapper modelMapper;
 
+    public ModelMapperService(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     public <E, T> List<T> mapList(Collection<? extends E> list, Class<T> type) {
         return list.stream().map(i -> modelMapper.map(i, type)).collect(Collectors.toList());
