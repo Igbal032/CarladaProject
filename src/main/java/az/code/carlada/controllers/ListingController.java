@@ -2,6 +2,7 @@ package az.code.carlada.controllers;
 
 import az.code.carlada.dtos.ListingListDTO;
 import az.code.carlada.models.Image;
+import az.code.carlada.services.ImageService;
 import az.code.carlada.services.ListingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,12 @@ import static org.springframework.http.HttpStatus.OK;
 public class ListingController {
     ListingService listingService;
     SearchService searchService;
+    ImageService imageService;
 
-    public ListingController(ListingService listingService, SearchService searchService) {
+    public ListingController(ListingService listingService, SearchService searchService, ImageService imageService) {
         this.listingService = listingService;
         this.searchService = searchService;
+        this.imageService = imageService;
     }
 
     @GetMapping
@@ -47,5 +50,29 @@ public class ListingController {
         return new ResponseEntity(searchService.searchListings(allParams), OK);
     }
 
+    @PutMapping(path = "/{id}/setThumbnail")
+    public ResponseEntity<Image> setThumbnailForListing(@PathVariable Long id, @RequestParam(name = "file") MultipartFile file) throws IOException {
+        return new ResponseEntity(listingService.setThumbnailForListing(id, file), OK);
+    }
 
+    @GetMapping(path = "/{id}/images")
+    public ResponseEntity<Image> getAllImgByListingId(@PathVariable Long id){
+        return new ResponseEntity(imageService.getAllImgFromListing(id), OK);
+    }
+
+    @GetMapping(path = "/{id}/images/{id1}")
+    public ResponseEntity<Image> getImgByListingId(@PathVariable Long id, @PathVariable Long id1){
+        return new ResponseEntity(imageService.getImgFromListing(id, id1), OK);
+    }
+
+    @PutMapping("{id}/images")
+    public ResponseEntity<Image> addImgByToListing(@PathVariable Long id, @RequestParam(name = "file") MultipartFile file) throws IOException {
+        return new ResponseEntity(imageService.addImgToListing(id, file), OK);
+    }
+
+    @DeleteMapping(path = "/{id}/images/{id1}")
+    public ResponseEntity deleteImgFromListingById(@PathVariable Long id, @PathVariable Long id1) throws IOException {
+        imageService.deleteImgFromListing(id, id1);
+        return new ResponseEntity(OK);
+    }
 }

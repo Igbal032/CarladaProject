@@ -1,5 +1,6 @@
 package az.code.carlada.daos;
 
+import az.code.carlada.exceptions.ImageNotFoundException;
 import az.code.carlada.models.Image;
 import az.code.carlada.repositories.ImageRepo;
 import org.springframework.stereotype.Component;
