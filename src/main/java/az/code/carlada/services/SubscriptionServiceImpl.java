@@ -24,7 +24,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         this.mapperService = mapperService;
         this.userDAO = userDAO;
     }
-    
+
 
     @Override
     public SubscriptionListDTO saveSubscription(SubscriptionDTO subDTO) {

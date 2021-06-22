@@ -1,12 +1,9 @@
 package az.code.carlada.services;
 
-<<<<<<< HEAD
-import az.code.carlada.daos.ImageDAO;
-=======
+
 import az.code.carlada.components.ModelMapperComponent;
 import az.code.carlada.configs.SchedulerExecutorConfig;
 import az.code.carlada.daos.DictionaryDAO;
->>>>>>> 2403f8c1c7641f595f4e7a14b03ad51d9bab01f8
 import az.code.carlada.daos.ListingDAO;
 import az.code.carlada.daos.UserDAO;
 import az.code.carlada.dtos.*;
@@ -30,13 +27,15 @@ public class ListingServiceImpl implements ListingService {
     DictionaryDAO dictionaryDAO;
     UserDAO userDAO;
     SchedulerExecutorConfig schExecService;
+    ImageService imageService;
 
-    public ListingServiceImpl(ListingDAO listingDAO, ModelMapperComponent mapperService, DictionaryDAO dictionaryDAO, UserDAO userDAO, SchedulerExecutorConfig schExecService) {
+    public ListingServiceImpl(ListingDAO listingDAO, ModelMapperComponent mapperService, DictionaryDAO dictionaryDAO, UserDAO userDAO, SchedulerExecutorConfig schExecService, ImageService imageService) {
         this.listingDAO = listingDAO;
         this.mapperService = mapperService;
         this.dictionaryDAO = dictionaryDAO;
         this.userDAO = userDAO;
         this.schExecService = schExecService;
+        this.imageService = imageService;
     }
 
     @Override
