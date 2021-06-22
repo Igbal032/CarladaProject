@@ -14,11 +14,11 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Entity
 @Table(name = "images")
-public class Images {
+public class Image {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String thumbnailLink;
+    private String name;
     @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="listing_id")

@@ -13,5 +13,6 @@ public interface ListingDAO {
     Listing getListingByUsernameById(String username, Long id);
     Listing getListingById(Long id);
     Listing createListing(Listing listing);
+    void saveListing(Listing listing);
     void delete(long id);
 }

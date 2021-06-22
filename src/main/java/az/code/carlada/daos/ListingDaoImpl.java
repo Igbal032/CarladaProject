@@ -57,8 +57,7 @@ public class ListingDaoImpl implements ListingDAO {
     @Override
     public Listing getListingById(Long id) {
         Optional<Listing> listing = listingRepository.findById(id);
-        System.out.println(listing);
-        if (!listing.isPresent())
+        if (listing.isEmpty())
             throw new ListingNotFound("Not such a listing");
         return listing.get();
     }
@@ -82,5 +81,10 @@ public class ListingDaoImpl implements ListingDAO {
             throw new ListingNotFound("Not such a listing");
         else
             listingRepository.deleteById(id);
+    }
+
+    @Override
+    public void saveListing(Listing listing) {
+         listingRepository.save(listing);
     }
 }

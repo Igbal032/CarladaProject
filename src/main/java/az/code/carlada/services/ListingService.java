@@ -5,6 +5,10 @@ import az.code.carlada.dtos.ListingCreationDTO;
 import az.code.carlada.dtos.ListingGetDTO;
 import az.code.carlada.dtos.ListingListDTO;
 import az.code.carlada.dtos.PaginationDTO;
+import az.code.carlada.models.Image;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface ListingService {
     PaginationDTO<ListingListDTO> getAllListing(Integer page, Integer count);
@@ -15,4 +19,5 @@ public interface ListingService {
     ListingGetDTO getListingByIdByProfile(Long id);
     ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO);
     void delete(long id);
+    Image setThumbnailForListing(Long listingId, MultipartFile file) throws IOException;
 }

@@ -1,5 +1,6 @@
 package az.code.carlada.services;
 
+import az.code.carlada.daos.ImageDAO;
 import az.code.carlada.daos.ListingDAO;
 import az.code.carlada.dtos.*;
 import az.code.carlada.enums.*;
@@ -10,7 +11,9 @@ import az.code.carlada.utils.BasicUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +23,8 @@ import java.util.stream.Collectors;
 public class ListingServiceImpl implements ListingService {
 
     ListingDAO listingDAO;
+    ImageDAO imageDAO;
+    ImageService imageService;
     ModelMapperService mapperService;
     ListingRepo listingRepository;
     ModelRepo modelRepository;
@@ -28,8 +33,10 @@ public class ListingServiceImpl implements ListingService {
     SpecificationRepo specRepository;
     UserRepo userRepository;
 
-    public ListingServiceImpl(ListingDAO listingDAO, ModelMapperService mapperService, ListingRepo listingRepository, ModelRepo modelRepository, MakeRepo makeRepository, CityRepo cityRepository, SpecificationRepo specRepository, UserRepo userRepository) {
+    public ListingServiceImpl(ListingDAO listingDAO, ImageDAO imageDAO, ImageService imageService, ModelMapperService mapperService, ListingRepo listingRepository, ModelRepo modelRepository, MakeRepo makeRepository, CityRepo cityRepository, SpecificationRepo specRepository, UserRepo userRepository) {
         this.listingDAO = listingDAO;
+        this.imageDAO = imageDAO;
+        this.imageService = imageService;
         this.mapperService = mapperService;
         this.listingRepository = listingRepository;
         this.modelRepository = modelRepository;
@@ -91,9 +98,6 @@ public class ListingServiceImpl implements ListingService {
         Make make = makeRepository.getById(listingCreationDTO.getMakeId());
         City city = cityRepository.getById(listingCreationDTO.getCityId());
         Optional<AppUser> appUser = userRepository.getAppUserByUsername("igbal-hasanli");
-        if (appUser.isEmpty()){
-            throw new UserNotFound("User doesnt exists");
-        }
         model.setMake(make);
         CarDetail carDetail = CarDetail.builder()
                 .bodyType(BasicUtil.getEnumFromString(BodyType.class, listingCreationDTO.getBodyType()))
@@ -141,4 +145,12 @@ public class ListingServiceImpl implements ListingService {
         listingDAO.delete(id);
     }
 
+    @Override
+    public Image setThumbnailForListing(Long listingId, MultipartFile file) throws IOException {
+        Image image = imageService.addImgToListing(listingId, file);
+        Listing listing = listingDAO.getListingById(listingId);
+        listing.setThumbnailUrl(image.getName());
+        listingDAO.saveListing(listing);
+        return image;
+    }
 }

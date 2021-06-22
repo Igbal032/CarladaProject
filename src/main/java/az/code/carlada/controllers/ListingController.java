@@ -1,13 +1,16 @@
 package az.code.carlada.controllers;
 
 import az.code.carlada.dtos.ListingListDTO;
+import az.code.carlada.models.Image;
 import az.code.carlada.services.ListingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import az.code.carlada.services.SearchService;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -29,7 +32,6 @@ public class ListingController {
         return new ResponseEntity(listingService.getAllListing(page, count), HttpStatus.OK);
     }
 
-
     @GetMapping("/vip")
     public ResponseEntity<List<ListingListDTO>> getAllVipListing(@RequestParam Integer page, @RequestParam Integer count){
         return new ResponseEntity(listingService.getAllVipListing(page, count), HttpStatus.OK);
@@ -44,4 +46,6 @@ public class ListingController {
     public ResponseEntity search(@RequestParam(required = false) Map<String, String> allParams) {
         return new ResponseEntity(searchService.searchListings(allParams), OK);
     }
+
+
 }
