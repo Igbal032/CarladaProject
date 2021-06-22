@@ -1,8 +1,9 @@
 package az.code.carlada.dtos;
+import lombok.Getter;
+import lombok.Setter;
 
-import lombok.Data;
-
-@Data
+@Getter
+@Setter
 public class AppUserDTO {
     private String fullName;
     private String username;
