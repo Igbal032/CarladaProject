@@ -26,7 +26,7 @@ public class SchedulerExecutorServiceImpl implements SchedulerExecutorService {
     public void runAutoPaymentJob() {
         TimerInfoDTO infoDTO = TimerInfoDTO.builder()
                 .runForever(true)
-                .repeatIntervalMS(2000)
+                .repeatIntervalMS(1000*60*60*24)
                 .build();
         scheduler.schedule(AutoPaymentJob.class, infoDTO);
     }
