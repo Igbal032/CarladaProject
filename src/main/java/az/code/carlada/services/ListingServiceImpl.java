@@ -7,7 +7,6 @@ import az.code.carlada.exceptions.UserNotFound;
 import az.code.carlada.models.*;
 import az.code.carlada.repositories.*;
 import az.code.carlada.utils.BasicUtil;
-import az.code.carlada.utils.ModelMapperUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 public class ListingServiceImpl implements ListingService {
 
     ListingDAO listingDAO;
-    ModelMapperUtil mapperUtil;
+    ModelMapperService mapperService;
     ListingRepo listingRepository;
     ModelRepo modelRepository;
     MakeRepo makeRepository;
@@ -29,9 +28,9 @@ public class ListingServiceImpl implements ListingService {
     SpecificationRepo specRepository;
     UserRepo userRepository;
 
-    public ListingServiceImpl(ListingDAO listingDAO, ModelMapper modelMapper, ModelRepo modelRepository, ListingRepo listingRepository, MakeRepo makeRepository, CityRepo cityRepository, SpecificationRepo specRepository, UserRepo userRepository) {
+    public ListingServiceImpl(ListingDAO listingDAO, ModelMapperService mapperService, ListingRepo listingRepository, ModelRepo modelRepository, MakeRepo makeRepository, CityRepo cityRepository, SpecificationRepo specRepository, UserRepo userRepository) {
         this.listingDAO = listingDAO;
-        this.mapperUtil = ModelMapperUtil.builder().modelMapper(modelMapper).build();
+        this.mapperService = mapperService;
         this.listingRepository = listingRepository;
         this.modelRepository = modelRepository;
         this.makeRepository = makeRepository;
@@ -44,7 +43,7 @@ public class ListingServiceImpl implements ListingService {
     public PaginationDTO<ListingListDTO> getAllListing(Integer page, Integer count) {
         Page<Listing> p = listingDAO.getAllListing(page, count);
         List<ListingListDTO> listingListDTOS = p.getContent().stream()
-                .map(i -> mapperUtil.convertListingToListDto(i))
+                .map(i -> mapperService.convertListingToListDto(i))
                 .collect(Collectors.toList());
 
         return new PaginationDTO<>(p.hasNext(), p.hasPrevious(), p.getTotalPages(), p.getNumber(), p.getTotalElements(), listingListDTOS);
@@ -54,7 +53,7 @@ public class ListingServiceImpl implements ListingService {
     public PaginationDTO<ListingListDTO> getAllVipListing(Integer page, Integer count) {
         Page<Listing> p = listingDAO.getAllVipListing(page, count);
         List<ListingListDTO> listingListDTOS = p.getContent()
-                .stream().map(i -> mapperUtil.convertListingToListDto(i))
+                .stream().map(i -> mapperService.convertListingToListDto(i))
                 .collect(Collectors.toList());
 
         return new PaginationDTO<>(p.hasNext(), p.hasPrevious(), p.getTotalPages(), p.getNumber(), p.getTotalElements(), listingListDTOS);
@@ -62,14 +61,14 @@ public class ListingServiceImpl implements ListingService {
 
     @Override
     public ListingGetDTO getListingById(Long id) {
-        return mapperUtil.convertListingToListingGetDto(listingDAO.getListingById(id));
+        return mapperService.convertListingToListingGetDto(listingDAO.getListingById(id));
     }
 
     @Override
     public PaginationDTO<ListingListDTO> getAllListingBySlug(String username, Integer page, Integer count) {
         Page<Listing> p = listingDAO.getAllListingByUsername(username, page, count);
         List<ListingListDTO> listingListDTOS = p.getContent().stream()
-                .map(i -> mapperUtil.convertListingToListDto(i))
+                .map(i -> mapperService.convertListingToListDto(i))
                 .collect(Collectors.toList());
         return new PaginationDTO<>(p.hasNext(), p.hasPrevious(), p.getTotalPages(), p.getNumber(), p.getTotalElements(), listingListDTOS);
     }
@@ -83,7 +82,7 @@ public class ListingServiceImpl implements ListingService {
     @Override
     public ListingGetDTO getListingByIdByProfile(Long id) {
         String username = "shafig";
-        return mapperUtil.convertListingToListingGetDto(listingDAO.getListingByUsernameById(username, id));
+        return mapperService.convertListingToListingGetDto(listingDAO.getListingByUsernameById(username, id));
     }
 
     @Override
@@ -134,7 +133,7 @@ public class ListingServiceImpl implements ListingService {
         carDetail.setCar(car);
         car.setListing(listing);
         listingDAO.createListing(listing);
-        return mapperUtil.convertListingToListingGetDto(listing);
+        return mapperService.convertListingToListingGetDto(listing);
     }
 
     @Override

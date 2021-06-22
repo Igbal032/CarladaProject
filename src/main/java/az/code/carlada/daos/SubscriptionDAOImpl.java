@@ -6,7 +6,7 @@ import az.code.carlada.exceptions.SubscriptionNotFound;
 import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Subscription;
 import az.code.carlada.repositories.*;
-import az.code.carlada.utils.ModelMapperUtil;
+import az.code.carlada.services.ModelMapperService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
@@ -15,31 +15,26 @@ import java.util.List;
 @Component
 public class SubscriptionDAOImpl implements SubscriptionDAO {
     SubscriptionRepo subRepo;
-    ModelMapperUtil mapperUtil;
+    ModelMapperService mapperService;
     CityRepo cityRepo;
     ModelRepo modelRepo;
     MakeRepo makeRepo;
     SpecificationRepo specRepo;
 
-    public SubscriptionDAOImpl(SubscriptionRepo subRepo,
-                               CityRepo cityRepo,
-                               ModelRepo modelRepo,
-                               SpecificationRepo specRepo,
-                               MakeRepo makeRepo,
-                               ModelMapper mapper) {
-        this.cityRepo = cityRepo;
-        this.makeRepo = makeRepo;
-        this.modelRepo = modelRepo;
-        this.specRepo = specRepo;
+    public SubscriptionDAOImpl(SubscriptionRepo subRepo, ModelMapperService mapperService, CityRepo cityRepo, ModelRepo modelRepo, MakeRepo makeRepo, SpecificationRepo specRepo) {
         this.subRepo = subRepo;
-        this.mapperUtil = ModelMapperUtil.builder().modelMapper(mapper).build();
+        this.mapperService = mapperService;
+        this.cityRepo = cityRepo;
+        this.modelRepo = modelRepo;
+        this.makeRepo = makeRepo;
+        this.specRepo = specRepo;
     }
 
     @Override
     public Subscription saveSubscription(SubscriptionDTO s, AppUser appUser) {
         if (s.getSubId() != null) checkSubscription(s.getSubId(), appUser);
 
-        Subscription sub = mapperUtil.convertDTOToSubscription(s);
+        Subscription sub = mapperService.convertDTOToSubscription(s);
 
         if (s.getCityId() != null){
             if(cityRepo.findById(s.getCityId()).isEmpty())
