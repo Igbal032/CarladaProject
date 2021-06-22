@@ -2,7 +2,7 @@ package az.code.carlada.services;
 
 import az.code.carlada.dtos.TimerInfoDTO;
 import az.code.carlada.jobs.SubscriptionNotification;
-import org.springframework.context.annotation.Bean;
+import az.code.carlada.models.Listing;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,11 +13,10 @@ public class SchedulerExecutorServiceImpl implements SchedulerExecutorService {
         this.scheduler = scheduler;
     }
 
-    @Bean
-    public void runSubscriptionJob() {
+    public void runSubscriptionJob(Listing listing) {
         TimerInfoDTO infoDTO = TimerInfoDTO.builder()
-                .runForever(true)
-                .repeatIntervalMS(10000)
+                .totalFireCount(1)
+                .callbackData(listing.getAppUser().getEmail())
                 .build();
         scheduler.schedule(SubscriptionNotification.class, infoDTO);
     }
