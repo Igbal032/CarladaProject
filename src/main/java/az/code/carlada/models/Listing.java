@@ -1,6 +1,5 @@
 package az.code.carlada.models;
 
-import az.code.carlada.enums.Status;
 import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
@@ -19,8 +18,7 @@ public class Listing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Enumerated(EnumType.STRING)
-    private Status type;
+
     private String thumbnailUrl;
     private boolean autoPay;
     private boolean isActive;
@@ -38,6 +36,9 @@ public class Listing {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="city_id")
     private City city;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="status_type_id")
+    private Status statusType;
     @OneToMany(mappedBy="listing"
             ,cascade = CascadeType.ALL)
     private List<Image> images;

@@ -27,14 +27,12 @@ import java.util.stream.Collectors;
 @Service
 public class ImageServiceImpl implements ImageService{
 
+    @Value("${firebase.project.id}")
+    public String projectId;
+    @Value("${firebase.bucket.url}")
+    public String bucket;
     ImageDAO imageDAO;
     Storage storage;
-
-    @Value("${firebase.project.id}")
-    String projectId;
-
-    @Value("${firebase.bucket.url}")
-    String bucket;
 
     public ImageServiceImpl(ImageDAO imageDAO) {
         this.imageDAO = imageDAO;
@@ -76,7 +74,6 @@ public class ImageServiceImpl implements ImageService{
         String imageName = ImageUtil.generateFileName(file.getOriginalFilename());
         Map<String, String> map = new HashMap<>();
         map.put("firebaseStorageDownloadTokens", imageName);
-
         BlobId blobId = BlobId.of(bucket, imageName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setMetadata(map)

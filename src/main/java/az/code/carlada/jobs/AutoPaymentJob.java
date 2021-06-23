@@ -4,15 +4,11 @@ import az.code.carlada.configs.SchedulerExecutorConfig;
 import az.code.carlada.daos.ListingDAO;
 import az.code.carlada.daos.SearchDAO;
 import az.code.carlada.daos.UserDAO;
-import az.code.carlada.enums.Status;
-import az.code.carlada.enums.TransactionType;
-import az.code.carlada.exceptions.EnoughBalanceException;
 import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Listing;
+import az.code.carlada.models.Status;
 import az.code.carlada.models.Transaction;
-import az.code.carlada.repositories.ListingRepo;
 import az.code.carlada.repositories.TransactionRepo;
-import az.code.carlada.repositories.UserRepo;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -45,22 +41,22 @@ public class AutoPaymentJob implements Job {
             LocalDateTime today = LocalDateTime.now();
             boolean isAfterOrNot = today.isAfter(listing.getExpiredAt());
             if (isAfterOrNot) {
-                if (user.getAmount() < Status.STANDARD.getStatusAmount()) {
+                Status status = userDAO.getStatusByName("STANDARD");
+                if (user.getAmount() < status.getPrice()) {
                     listing.setAutoPay(false);
                     listingDAO.saveListing(listing);
                     schConfig.manualDisableJob();
                 }
-                user.setAmount(user.getAmount() - Status.STANDARD.getStatusAmount());
+                user.setAmount(user.getAmount() - status.getPrice());
                 userDAO.saveUser(user);
                 listing.setUpdatedAt(LocalDateTime.now());
                 listing.setExpiredAt(duration);
-                listing.setType(Status.STANDARD);
+                listing.setStatusType(userDAO.getStatusByName("STANDARD"));
                 Transaction transaction = Transaction.builder()
-                        .transactionType(TransactionType.UPDATE_PAYMENT)
                         .appUser(user)
                         .createdDate(LocalDateTime.now())
                         .listingId(listing.getId())
-                        .amount(Status.STANDARD.getStatusAmount())
+                        .amount((double)status.getPrice())
                         .build();
                 transactionRepo.save(transaction);
             }

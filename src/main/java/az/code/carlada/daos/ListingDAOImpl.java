@@ -1,18 +1,23 @@
 package az.code.carlada.daos;
 
-import az.code.carlada.enums.Status;
 import az.code.carlada.enums.TransactionType;
 import az.code.carlada.exceptions.ListingNotFound;
+import az.code.carlada.exceptions.UserNotFound;
+import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Listing;
+import az.code.carlada.models.Status;
 import az.code.carlada.models.Transaction;
 import az.code.carlada.repositories.ListingRepo;
+import az.code.carlada.repositories.StatusRepo;
 import az.code.carlada.repositories.TransactionRepo;
+import az.code.carlada.repositories.UserRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -21,11 +26,15 @@ import java.util.Optional;
 public class ListingDAOImpl implements ListingDAO {
 
     ListingRepo listingRepository;
+    StatusRepo statusRepo;
     TransactionRepo transactionRepo;
+    UserRepo userRepo;
 
-    public ListingDAOImpl(ListingRepo listingRepository, TransactionRepo transactionRepo) {
+    public ListingDAOImpl(UserRepo userRepo,StatusRepo statusRepo,ListingRepo listingRepository, TransactionRepo transactionRepo) {
         this.listingRepository = listingRepository;
         this.transactionRepo = transactionRepo;
+        this.statusRepo = statusRepo;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -37,9 +46,18 @@ public class ListingDAOImpl implements ListingDAO {
     }
 
     @Override
+    public List<Listing> getAllActiveListingsByUser(AppUser appUser) {
+        Specification<Listing> spec = Specification
+                .where((root, query, cb) -> cb.and(cb.equal(root.get("isActive"), true),
+                        cb.equal(root.get("appUser"), appUser)));
+        return listingRepository.findAll(spec);
+    }
+
+    @Override
     public Page<Listing> getAllVipListing(Integer page, Integer count) {
         Pageable pageable = PageRequest.of(page, count);
-        return listingRepository.getAllByTypeEquals(Status.VIP, pageable);
+        Status status = statusRepo.getStatusByStatusName("FREE");
+        return listingRepository.getAllByStatusType(status, pageable);
     }
 
     @Override
@@ -69,10 +87,9 @@ public class ListingDAOImpl implements ListingDAO {
     public Listing createListing(Listing listing) {
         Listing listing1 = listingRepository.save(listing);
         transactionRepo.save(Transaction.builder()
-                .amount(Status.FREE.getStatusAmount())
+                .amount((double)listing.getStatusType().getPrice())
                 .listingId(listing1.getId())
                 .createdDate(LocalDateTime.now())
-                .transactionType(TransactionType.NEW)
                 .appUser(listing.getAppUser())
                 .build());
         return listing1;

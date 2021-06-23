@@ -1,9 +1,7 @@
 package az.code.carlada.controllers;
-import az.code.carlada.dtos.ListingCreationDTO;
-import az.code.carlada.dtos.ListingGetDTO;
-import az.code.carlada.dtos.ListingListDTO;
+import az.code.carlada.dtos.*;
+import az.code.carlada.models.AppUser;
 import az.code.carlada.services.ListingService;
-import az.code.carlada.dtos.TransactionListDTO;
 import az.code.carlada.services.ProfileService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import az.code.carlada.dtos.SubscriptionDTO;
+
 import az.code.carlada.services.SubscriptionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +33,13 @@ public class ProfileController {
     }
 
     @GetMapping("/listings")
-    public ResponseEntity<List<ListingListDTO>> getAllListingByProfile(@RequestParam Integer page, @RequestParam Integer count) {
+    public ResponseEntity<List<ListingListDTO>> getAllListingByProfile(@RequestAttribute("user") UserDTO user, @RequestParam Integer page, @RequestParam Integer count) {
+        System.out.println(user);
         return new ResponseEntity(listingService.getAllListingByProfile(page, count), HttpStatus.OK);
     }
 
     @PostMapping("/listings")
-    public ResponseEntity<List<ListingGetDTO>> createNewListing(@RequestBody ListingCreationDTO listingCreationDTO) {
+    public ResponseEntity<List<ListingGetDTO>> createNewListing(@RequestAttribute("user") UserDTO user,@RequestBody ListingCreationDTO listingCreationDTO) {
         return new ResponseEntity(listingService.saveListing(listingCreationDTO), HttpStatus.OK);
     }
 
