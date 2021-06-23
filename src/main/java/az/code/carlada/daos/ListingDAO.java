@@ -3,8 +3,6 @@ package az.code.carlada.daos;
 import az.code.carlada.models.Listing;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
-
 public interface ListingDAO {
 
     Page<Listing> getAllListing(Integer page,Integer count);
@@ -13,5 +11,7 @@ public interface ListingDAO {
     Listing getListingByUsernameById(String username, Long id);
     Listing getListingById(Long id);
     Listing createListing(Listing listing);
+    void saveListing(Listing listing);
     void delete(long id);
+    void disableExpired();
 }

@@ -1,41 +1,48 @@
-package az.code.carlada.services;
+package az.code.carlada.components;
 
 import az.code.carlada.enums.BodyType;
 import az.code.carlada.enums.FuelType;
 import az.code.carlada.models.Listing;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
-public class SearchSpecificationServiceImpl implements SearchSpecificationService {
+import java.util.Objects;
+
+@Component
+public class ListingSpecificationComponentImpl implements ListingSpecificationComponent {
     @Override
     public Specification<Listing> equalMake(Long id) {
-        if (id == null) return null;
-        return (root, query, cb) -> cb.equal(root.get("car").get("model").get("make").get("id"), id);
+        return (root, query, cb) -> Objects.nonNull(id) ?
+                cb.equal(root.get("car").get("model").get("make").get("id"), id) :
+                cb.conjunction();
     }
 
     @Override
     public Specification<Listing> equalModel(Long id) {
-        if (id == null) return null;
-        return (root, query, cb) -> cb.equal(root.get("car").get("model").get("id"), id);
+        return (root, query, cb) -> Objects.nonNull(id) ?
+                cb.equal(root.get("car").get("model").get("id"), id) :
+                cb.conjunction();
     }
 
     @Override
     public Specification<Listing> equalLocation(Long id) {
-        if (id == null) return null;
-        return (root, query, cb) -> cb.equal(root.get("city").get("id"), id);
+        return (root, query, cb) -> Objects.nonNull(id) ?
+                cb.equal(root.get("city").get("id"), id) :
+                cb.conjunction();
     }
 
     @Override
     public Specification<Listing> equalFuelType(FuelType fuelType) {
-        if (fuelType == null) return null;
-        return (root, query, cb) -> cb.equal(root.get("car").get("carDetail").get("fuelType"), fuelType);
+        return (root, query, cb) -> Objects.nonNull(fuelType) ?
+                cb.equal(root.get("car").get("carDetail").get("fuelType"), fuelType) :
+                cb.conjunction();
     }
 
     @Override
     public Specification<Listing> equalBodyType(BodyType bodyType) {
-        if (bodyType == null) return null;
-        return (root, query, cb) -> cb.equal(root.get("car").get("carDetail").get("bodyType"), bodyType);
+        return (root, query, cb) -> Objects.nonNull(bodyType) ?
+                cb.equal(root.get("car").get("carDetail").get("bodyType"), bodyType) :
+                cb.conjunction();
     }
 
     @Override
@@ -64,24 +71,28 @@ public class SearchSpecificationServiceImpl implements SearchSpecificationServic
 
     @Override
     public Specification<Listing> equalLoanOption(Boolean loanOption) {
-        if (loanOption == null) return null;
-        return (root, query, cb) -> cb.equal(root.get("car").get("loanOption"), loanOption);
+        return (root, query, cb) -> Objects.nonNull(loanOption) ?
+                cb.equal(root.get("car").get("loanOption"), loanOption) :
+                cb.conjunction();
     }
 
     @Override
     public Specification<Listing> equalCashOption(Boolean cashOption) {
-        if (cashOption == null) return null;
-        return (root, query, cb) -> cb.equal(root.get("car").get("cashOption"), cashOption);
+        return (root, query, cb) -> Objects.nonNull(cashOption) ?
+                cb.equal(root.get("car").get("cashOption"), cashOption) :
+                cb.conjunction();
     }
 
     @Override
     public Specification<Listing> equalBarterOption(Boolean barterOption) {
-        if (barterOption == null) return null;
-        return (root, query, cb) -> cb.equal(root.get("car").get("barterOption"), barterOption);
+        return (root, query, cb) -> Objects.nonNull(barterOption) ?
+                cb.equal(root.get("car").get("barterOption"), barterOption) :
+                cb.conjunction();
     }
 
     public Specification<Listing> equalLeaseOption(Boolean leaseOption) {
-        if (leaseOption == null) return null;
-        return (root, query, cb) -> cb.equal(root.get("car").get("leaseOption"), leaseOption);
+        return (root, query, cb) -> Objects.nonNull(leaseOption) ?
+                cb.equal(root.get("car").get("leaseOption"), leaseOption) :
+                cb.conjunction();
     }
 }

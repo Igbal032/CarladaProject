@@ -40,5 +40,5 @@ public class Listing {
     private City city;
     @OneToMany(mappedBy="listing"
             ,cascade = CascadeType.ALL)
-    private List<Images> images;
+    private List<Image> images;
 }

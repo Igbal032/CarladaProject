@@ -45,7 +45,8 @@ public class ProfileController {
     }
 
     @PutMapping("/listings/{id}")
-    public ResponseEntity<List<ListingGetDTO>> createNewListing(@PathVariable long id, @RequestBody ListingCreationDTO listingCreationDTO) {
+
+    public ResponseEntity<List<ListingGetDTO>> createNewListing(@PathVariable Long id, @RequestBody ListingCreationDTO listingCreationDTO) {
         return new ResponseEntity(listingService.saveListing(listingCreationDTO.toBuilder().id(id).build()), HttpStatus.OK);
     }
 
@@ -92,7 +93,7 @@ public class ProfileController {
 
     @DeleteMapping("/subscriptions/{id}")
     public ResponseEntity disableSubscription(@PathVariable Long id) {
-        subService.disableSubscription(id);
+        subService.deleteSubscription(id);
         return new ResponseEntity(OK);
     }
 

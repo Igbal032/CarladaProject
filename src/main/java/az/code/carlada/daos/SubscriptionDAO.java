@@ -15,7 +15,5 @@ public interface SubscriptionDAO {
 
     Subscription getSubscription(Long id, AppUser appUser);
 
-    Boolean checkSubscription(Long id, AppUser appUser);
-
-    void disableSubscription(Long id, AppUser appUser);
+    void deleteSubscription(Long id, AppUser appUser);
 }

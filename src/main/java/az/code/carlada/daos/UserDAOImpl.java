@@ -22,22 +22,22 @@ public class UserDAOImpl implements UserDAO {
 
     UserRepo userRepo;
     TransactionRepo transactionRepo;
-    ListingRepo listingRepo;
+    ListingDAO listingDAO;
 
-    public UserDAOImpl(UserRepo userRepo, TransactionRepo transactionRepo, ListingRepo listingRepo) {
+    public UserDAOImpl(UserRepo userRepo, TransactionRepo transactionRepo, ListingDAO listingDAO) {
         this.userRepo = userRepo;
         this.transactionRepo = transactionRepo;
-        this.listingRepo = listingRepo;
+        this.listingDAO = listingDAO;
     }
 
     @Override
     public Transaction addAmount(String username, Double amount) {
         Optional<AppUser> appUser = userRepo.getAppUserByUsername(username);
-        if (appUser!=null){
-            if (amount<1){
+        if (appUser.isPresent()) {
+            if (amount < 1) {
                 throw new IllegalSignException("Amount must not be less than 1");
             }
-            Double totalAmount = appUser.get().getAmount()+amount;
+            Double totalAmount = appUser.get().getAmount() + amount;
             appUser.get().setAmount(totalAmount);
             Transaction transaction  = createTransaction(null,amount,appUser.get(), TransactionType.INCREASE_BALANCE);
             userRepo.save(appUser.get());
@@ -51,57 +51,46 @@ public class UserDAOImpl implements UserDAO {
         Double vipStatus = Status.VIP.getStatusAmount();
         Double standardStatus = Status.STANDARD.getStatusAmount();
         Double defaultStatus = Status.FREE.getStatusAmount();
-        Optional<AppUser> appUser = userRepo.getAppUserByUsername(username);
+        AppUser appUser = getUserByUsername(username);
         Transaction transaction;
-        Optional<Listing> listing;
-        if (appUser!=null){
-            listing = listingRepo.findById(listingId);
-            if (listing.isPresent()){
-                switch (statusType){
-                    case VIP:
-                        if (vipStatus<=appUser.get().getAmount()){
-                            appUser.get().setAmount(appUser.get().getAmount()-vipStatus);
-                            transaction = createTransaction(listingId,vipStatus,appUser.get(),TransactionType.VIP_STATUS_PAYMENT);
-                        }
-                        else {
-                            throw new EnoughBalanceException("Balance is not enough");
-                        }
-                        break;
-                    case FREE:
-                        if (defaultStatus<=appUser.get().getAmount()){
-                            appUser.get().setAmount(appUser.get().getAmount()-defaultStatus);
-                            transaction = createTransaction(listingId,defaultStatus,appUser.get(),TransactionType.NEW);
-                        }
-                        else {
-                            throw new EnoughBalanceException("Balance is not enough");
-                        }
-                        break;
-                    case STANDARD:
-                        if (standardStatus<=appUser.get().getAmount()){
-                            appUser.get().setAmount(appUser.get().getAmount()-standardStatus);
-                            transaction = createTransaction(listingId,standardStatus,appUser.get(),TransactionType.UPDATE_PAYMENT);
-                        }
-                        else {
-                            throw new EnoughBalanceException("Balance is not enough");
-                        }
-                        break;
-                    default:
-                        throw new IllegalStateException("Unexpected value: " + statusType);
+        Listing listing = listingDAO.getListingById(listingId);
+        switch (statusType) {
+            case VIP:
+                if (vipStatus <= appUser.getAmount()) {
+                    appUser.setAmount(appUser.getAmount() - vipStatus);
+                    transaction = createTransaction(listingId, vipStatus, appUser, TransactionType.VIP_STATUS_PAYMENT);
+                } else {
+                    throw new EnoughBalanceException("Balance is not enough");
                 }
-                listing.get().setType(statusType);
-                listingRepo.save(listing.get());
-                userRepo.save(appUser.get());
-                return transaction;
-            }
-            else {
-                throw new ListingNotFound("Listing Not Found");
-            }
+                break;
+            case FREE:
+                if (defaultStatus <= appUser.getAmount()) {
+                    appUser.setAmount(appUser.getAmount() - defaultStatus);
+                    transaction = createTransaction(listingId, defaultStatus, appUser, TransactionType.NEW);
+                } else {
+                    throw new EnoughBalanceException("Balance is not enough");
+                }
+                break;
+            case STANDARD:
+                if (standardStatus <= appUser.getAmount()) {
+                    appUser.setAmount(appUser.getAmount() - standardStatus);
+                    transaction = createTransaction(listingId, standardStatus, appUser, TransactionType.UPDATE_PAYMENT);
+                } else {
+                    throw new EnoughBalanceException("Balance is not enough");
+                }
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + statusType);
         }
-        throw new UserNotFound("User Not Found");
+        listing.setType(statusType);
+        listingDAO.saveListing(listing);
+        userRepo.save(appUser);
+        return transaction;
     }
 
+
     @Override
-    public Transaction createTransaction(Long listingId,Double amount, AppUser appUser, TransactionType transactionType) {
+    public Transaction createTransaction(Long listingId, Double amount, AppUser appUser, TransactionType transactionType) {
         Transaction transaction = Transaction.builder()
                 .listingId(listingId)
                 .appUser(appUser)
@@ -115,9 +104,10 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public AppUser getUserByUsername(String username) {
-        if (userRepo.getAppUserByUsername(username).isEmpty())
+        Optional<AppUser> appUser = userRepo.getAppUserByUsername(username);
+        if (appUser.isEmpty())
             throw new UserNotFound("User Not Found");
 
-        return userRepo.getAppUserByUsername(username).get();
+        return appUser.get();
     }
 }

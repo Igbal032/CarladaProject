@@ -4,66 +4,93 @@ import az.code.carlada.dtos.SearchDTO;
 import az.code.carlada.models.Listing;
 import az.code.carlada.models.Subscription;
 import az.code.carlada.repositories.ListingRepo;
-import az.code.carlada.services.SearchSpecificationService;
+import az.code.carlada.repositories.SubscriptionRepo;
+import az.code.carlada.components.ListingSpecificationComponent;
+import az.code.carlada.components.SubscriptionSpecificationComponent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Predicate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
 @Component
 public class SearchDAOImpl implements SearchDAO {
     ListingRepo listingRepo;
-    SearchSpecificationService specs;
+    SubscriptionRepo subRepo;
+    ListingSpecificationComponent listingSpecs;
+    SubscriptionSpecificationComponent subSpecs;
 
-    public SearchDAOImpl(ListingRepo listingRepo, SearchSpecificationService specs) {
+    public SearchDAOImpl(ListingRepo listingRepo, SubscriptionRepo subRepo, ListingSpecificationComponent listingSpecs, SubscriptionSpecificationComponent subSpecs) {
         this.listingRepo = listingRepo;
-        this.specs = specs;
+        this.subRepo = subRepo;
+        this.listingSpecs = listingSpecs;
+        this.subSpecs = subSpecs;
     }
 
+
     @Override
-    public List<Listing> searchAllListings(Subscription sub) {
-        Long makeId = sub.getMake() == null ? null : sub.getMake().getId();
-        Long modelId = sub.getModel() == null ? null : sub.getModel().getId();
-        Long cityId = sub.getCity() == null ? null : sub.getCity().getId();
-
+    public List<Listing> searchAllListingsByExpireDate() {
         Specification<Listing> spec = Specification
-                .where(specs.equalMake(makeId))
-                .and(specs.equalModel(modelId))
-                .and(specs.equalLocation(cityId))
-                .and(specs.equalFuelType(sub.getFuelType()))
-                .and(specs.equalBodyType(sub.getBodyType()))
-                .and(specs.betweenYears(sub.getMinYear(), sub.getMaxYear()))
-                .and(specs.betweenPrices(sub.getMinPrice(), sub.getMaxPrice()))
-                .and(specs.betweenMileages(sub.getMinMileage(), sub.getMaxMileage()))
-                .and(specs.equalLoanOption(sub.getLoanOption()))
-                .and(specs.equalBarterOption(sub.getBarterOption()))
-                .and(specs.equalCashOption(sub.getCashOption()))
-                .and(specs.equalLeaseOption(sub.getLeaseOption()));
-
+                .where((root, query, cb) ->
+                                cb.and(cb.lessThanOrEqualTo(root.get("expiredAt"), LocalDateTime.now().plusDays(1)),
+                                        cb.isTrue(root.get("isActive"))));
         return listingRepo.findAll(spec);
+    }
+//    @Override
+//    public List<Listing> searchAllListingsWithExpiredDate() {
+//        Specification<Listing> spec = Specification
+//                .where((root, query, cb) ->
+//                                cb.and(cb.lessThanOrEqualTo(root.get("expiredAt"), LocalDateTime.now()),
+//                                        cb.isTrue(root.get("isActive"))));
+//        return listingRepo.findAll(spec);
+//    }
+
+    @Override
+    public List<Subscription> searchAllSubscriptions(Listing list) {
+        Long makeId = list.getCar().getModel().getMake().getId();
+        Long modelId = list.getCar().getModel().getId();
+        Long cityId = list.getCity().getId();
+
+        Specification<Subscription> spec = Specification
+                .where(subSpecs.equalMake(makeId))
+                .and(subSpecs.equalModel(modelId))
+                .and(subSpecs.equalLocation(cityId))
+                .and(subSpecs.equalFuelType(list.getCar().getCarDetail().getFuelType()))
+                .and(subSpecs.equalBodyType(list.getCar().getCarDetail().getBodyType()))
+                .and(subSpecs.betweenIntegers(list.getCar().getMileage(), "minMileage", "maxMileage"))
+                .and(subSpecs.betweenIntegers(list.getCar().getPrice(), "minPrice", "maxPrice"))
+                .and(subSpecs.betweenIntegers(list.getCar().getYear(), "minYear", "maxYear"))
+                .and(subSpecs.equalBarterOption(list.getCar().getBarterOption()))
+                .and(subSpecs.equalLoanOption(list.getCar().getLoanOption()))
+                .and(subSpecs.equalCashOption(list.getCar().getCashOption()))
+                .and(subSpecs.equalLeaseOption(list.getCar().getLeaseOption()));
+
+        return subRepo.findAll(spec);
     }
 
     @Override
     public Page<Listing> searchListingsByPage(SearchDTO params) {
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(params.getPage(), params.getCount());
 
         Specification<Listing> spec = Specification
-                .where(specs.equalMake(params.getMake()))
-                .and(specs.equalModel(params.getModel()))
-                .and(specs.equalLocation(params.getLocation()))
-                .and(specs.equalFuelType(params.getFuelType()))
-                .and(specs.equalBodyType(params.getBodyType()))
-                .and(specs.betweenYears(params.getMinYear(), params.getMaxYear()))
-                .and(specs.betweenPrices(params.getMinPrice(), params.getMaxPrice()))
-                .and(specs.betweenMileages(params.getMinMileage(), params.getMaxMileage()))
-                .and(specs.equalLoanOption(params.getLoanOption()))
-                .and(specs.equalBarterOption(params.getBarterOption()))
-                .and(specs.equalCashOption(params.getCashOption()))
-                .and(specs.equalLeaseOption(params.getLeaseOption()));
+                .where(listingSpecs.equalMake(params.getMake()))
+                .and(listingSpecs.equalModel(params.getModel()))
+                .and(listingSpecs.equalLocation(params.getLocation()))
+                .and(listingSpecs.equalFuelType(params.getFuelType()))
+                .and(listingSpecs.equalBodyType(params.getBodyType()))
+                .and(listingSpecs.betweenYears(params.getMinYear(), params.getMaxYear()))
+                .and(listingSpecs.betweenPrices(params.getMinPrice(), params.getMaxPrice()))
+                .and(listingSpecs.betweenMileages(params.getMinMileage(), params.getMaxMileage()))
+                .and(listingSpecs.equalLoanOption(params.getLoanOption()))
+                .and(listingSpecs.equalBarterOption(params.getBarterOption()))
+                .and(listingSpecs.equalCashOption(params.getCashOption()))
+                .and(listingSpecs.equalLeaseOption(params.getLeaseOption()));
 
         return listingRepo.findAll(spec, pageable);
     }

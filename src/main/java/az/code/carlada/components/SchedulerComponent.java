@@ -1,22 +1,22 @@
-package az.code.carlada.services;
+package az.code.carlada.components;
 
 import az.code.carlada.dtos.TimerInfoDTO;
 import az.code.carlada.utils.TimerUtil;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-@Service
-public class SchedulerService {
-    private static final Logger LOG = LoggerFactory.getLogger(SchedulerService.class);
+@Component
+public class SchedulerComponent {
+    private static final Logger LOG = LoggerFactory.getLogger(SchedulerComponent.class);
 
-    private Scheduler scheduler;
+    private final Scheduler scheduler;
 
-    public SchedulerService(Scheduler scheduler) {
+    public SchedulerComponent(Scheduler scheduler) {
         this.scheduler = scheduler;
     }
 

@@ -12,5 +12,5 @@ public interface SubscriptionService {
 
     SubscriptionListDTO getSubscriptionById(Long id);
 
-    void disableSubscription(Long id);
+    void deleteSubscription(Long id);
 }
