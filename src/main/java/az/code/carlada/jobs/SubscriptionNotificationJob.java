@@ -43,6 +43,8 @@ public class SubscriptionNotificationJob implements Job {
             throw new FileReadException(e.getMessage());
         }
         searchDAO.searchAllSubscriptions(listing).stream().parallel()
-                .forEach(i -> mailSender.sendEmail(i.getAppUser().getEmail(), prop.getProperty("subject") + " " + i.getAppUser().getFullName(), prop.getProperty("text")));
+                .forEach(i -> mailSender.sendEmail(i.getAppUser().getEmail(),
+                        prop.getProperty("subject") + " " + i.getAppUser().getFullName(),
+                        prop.getProperty("subtext")));
     }
 }

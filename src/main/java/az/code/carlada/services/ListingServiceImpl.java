@@ -90,7 +90,7 @@ public class ListingServiceImpl implements ListingService {
         Model model = dictionaryDAO.findModelById(listingCreationDTO.getModelId());
         Make make = dictionaryDAO.findMakeById(listingCreationDTO.getMakeId());
         City city = dictionaryDAO.findCityById(listingCreationDTO.getCityId());
-        AppUser appUser = userDAO.getUserByUsername("shafig");
+        AppUser appUser = userDAO.getUserByUsername("elgunvm");
 
         model.setMake(make);
         CarDetail carDetail = CarDetail.builder()
