@@ -45,6 +45,7 @@ public class ProfileController {
     }
 
     @PutMapping("/listings/{id}")
+
     public ResponseEntity<List<ListingGetDTO>> createNewListing(@PathVariable Long id, @RequestBody ListingCreationDTO listingCreationDTO) {
         return new ResponseEntity(listingService.saveListing(listingCreationDTO.toBuilder().id(id).build()), HttpStatus.OK);
     }
