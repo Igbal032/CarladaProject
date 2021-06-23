@@ -1,4 +1,4 @@
-package az.code.carlada.configs;
+package az.code.carlada.components;
 
 import az.code.carlada.components.SchedulerComponent;
 import az.code.carlada.dtos.TimerInfoDTO;
@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SchedulerExecutorConfig {
+public class SchedulerExecutorComponent {
     SchedulerComponent scheduler;
 
-    public SchedulerExecutorConfig(SchedulerComponent scheduler) {
+    public SchedulerExecutorComponent(SchedulerComponent scheduler) {
         this.scheduler = scheduler;
     }
 

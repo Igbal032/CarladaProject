@@ -1,5 +1,6 @@
 package az.code.carlada.configs;
 
+import az.code.carlada.components.TokenInterceptor;
 import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
@@ -22,21 +23,37 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper;
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @ComponentScan(basePackageClasses = KeycloakSecurityComponents.class)
-public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
+public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter implements WebMvcConfigurer {
+    final TokenInterceptor productServiceUserTokenInterceptor;
+
+    public SecurityConfig(TokenInterceptor productServiceUserTokenInterceptor) {
+        this.productServiceUserTokenInterceptor = productServiceUserTokenInterceptor;
+    }
+
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(productServiceUserTokenInterceptor);
+    }
+
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-//        super.configure(http);
         http.cors().and().csrf().disable().sessionManagement().
-
                 sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
                 .antMatchers("/users/create").permitAll()
                 .antMatchers("/users/signin").permitAll()
-                .anyRequest().permitAll();
+                .antMatchers("/api/v1/data/*").permitAll()
+                .antMatchers("/api/v1/listings/*").permitAll()
+                .antMatchers("/api/v1/user/*").permitAll()
+                .anyRequest().authenticated();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package az.code.carlada.jobs;
 
-import az.code.carlada.configs.SchedulerExecutorConfig;
+import az.code.carlada.components.SchedulerExecutorComponent;
 import az.code.carlada.daos.ListingDAO;
 import az.code.carlada.daos.SearchDAO;
 import az.code.carlada.daos.UserDAO;
@@ -19,12 +19,12 @@ import java.util.List;
 public class AutoPaymentJob implements Job {
 
     ListingDAO listingDAO;
-    SchedulerExecutorConfig schConfig;
+    SchedulerExecutorComponent schConfig;
     SearchDAO searchDAO;
     TransactionRepo transactionRepo;
     UserDAO userDAO;
 
-    public AutoPaymentJob(ListingDAO listingDAO, SchedulerExecutorConfig schConfig, SearchDAO searchDAO, TransactionRepo transactionRepo, UserDAO userDAO) {
+    public AutoPaymentJob(ListingDAO listingDAO, SchedulerExecutorComponent schConfig, SearchDAO searchDAO, TransactionRepo transactionRepo, UserDAO userDAO) {
         this.listingDAO = listingDAO;
         this.schConfig = schConfig;
         this.searchDAO = searchDAO;

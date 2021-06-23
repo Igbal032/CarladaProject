@@ -19,9 +19,6 @@ public class BasicUtil {
     }
 
     public static String createSlug(String content){
-        String slug = content.replace('@','-')
-                        .replace('.','-');
-        return slug
-                ;
+        return content.replace('@','-').replace('.','-');
     }
 }
