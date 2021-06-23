@@ -4,7 +4,6 @@ import az.code.carlada.daos.SearchDAO;
 import az.code.carlada.daos.SubscriptionDAO;
 import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Listing;
-import az.code.carlada.services.ModelMapperService;
 import org.modelmapper.ModelMapper;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;

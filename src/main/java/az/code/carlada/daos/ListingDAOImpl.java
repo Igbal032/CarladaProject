@@ -86,9 +86,4 @@ public class ListingDAOImpl implements ListingDAO {
         else
             listingRepository.deleteById(id);
     }
-
-    @Override
-    public void saveListing(Listing listing) {
-         listingRepository.save(listing);
-    }
 }
