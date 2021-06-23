@@ -110,4 +110,8 @@ public class UserDAOImpl implements UserDAO {
 
         return appUser.get();
     }
+
+    public AppUser saveUser(AppUser user){
+        return userRepo.save(user);
+    }
 }

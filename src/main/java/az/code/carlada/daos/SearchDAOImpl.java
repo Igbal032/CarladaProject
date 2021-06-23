@@ -42,14 +42,14 @@ public class SearchDAOImpl implements SearchDAO {
                                         cb.isTrue(root.get("isActive"))));
         return listingRepo.findAll(spec);
     }
-//    @Override
-//    public List<Listing> searchAllListingsWithExpiredDate() {
-//        Specification<Listing> spec = Specification
-//                .where((root, query, cb) ->
-//                                cb.and(cb.lessThanOrEqualTo(root.get("expiredAt"), LocalDateTime.now()),
-//                                        cb.isTrue(root.get("isActive"))));
-//        return listingRepo.findAll(spec);
-//    }
+    @Override
+    public List<Listing> searchAllListingsWithExpiredDate() {
+        org.springframework.data.jpa.domain.Specification<Listing> spec = Specification
+                .where((root, query, cb) ->
+                        cb.and(cb.lessThanOrEqualTo(root.get("expiredAt"), LocalDateTime.now()),
+                                cb.isTrue(root.get("isActive")),cb.isTrue(root.get("autoPay"))));
+        return listingRepo.findAll(spec);
+    }
 
     @Override
     public List<Subscription> searchAllSubscriptions(Listing list) {

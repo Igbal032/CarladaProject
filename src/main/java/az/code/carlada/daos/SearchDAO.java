@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface SearchDAO {
     List<Listing> searchAllListingsByExpireDate();
-//    List<Listing> searchAllListingsWithExpiredDate();
+    List<Listing> searchAllListingsWithExpiredDate();
     List<Subscription> searchAllSubscriptions(Listing list);
     Page<Listing> searchListingsByPage(SearchDTO params);
 }
