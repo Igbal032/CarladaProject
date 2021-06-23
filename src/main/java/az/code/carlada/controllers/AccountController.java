@@ -1,6 +1,7 @@
 package az.code.carlada.controllers;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import javax.ws.rs.core.Response;
 import az.code.carlada.dtos.UserDTO;
 import az.code.carlada.services.AccountService;
@@ -37,59 +38,15 @@ public class AccountController {
         this.accountService = accountService;
     }
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
-    @Value("${keycloak.auth-server-url}")
-    private String authServerUrl;
-    @Value("${keycloak.realm}")
-    private String realm;
-    @Value("${keycloak.resource}")
-    private String clientId;
-    @Value("${keycloak.credentials.secret}")
-    private String clientSecret;
+
     //CREATE NEW USER WITHOUT ROLE
     @PostMapping(path = "/create")
     public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
-        Keycloak keycloak = KeycloakBuilder.builder().serverUrl(authServerUrl)
-                .grantType(OAuth2Constants.PASSWORD).realm("master").clientId("admin-cli").username("ihasanli2021").password("12345")
-                .resteasyClient(new ResteasyClientBuilder().connectionPoolSize(10).build()).build();
-        keycloak.tokenManager().getAccessToken();
-        //Call account service to save user
-        UserRepresentation user = accountService.user(userDTO);
-        System.out.println(user.getAttributes());
-        //Get realm
-        RealmResource realmResource = keycloak.realm(realm);
-        UsersResource usersRessource = realmResource.users();
-
-        Response response = usersRessource.create(user);
-
-        userDTO.setStatusCode(response.getStatus());
-        userDTO.setStatus(response.getStatusInfo().toString());
-
-        if (response.getStatus() == 201) {
-            String userId = CreatedResponseUtil.getCreatedId(response);
-            log.info("Created userId {}", userId);
-            // create password credential
-            CredentialRepresentation passwordCred = new CredentialRepresentation();
-            passwordCred.setTemporary(false);
-            passwordCred.setType(CredentialRepresentation.PASSWORD);
-            passwordCred.setValue(userDTO.getPassword());
-            UserResource userResource = usersRessource.get(userId);
-            // Set password credential
-            userResource.resetPassword(passwordCred);
-            UserDTO newUser = accountService.createUser(userDTO);
-        }
-        return ResponseEntity.ok(userDTO);
+        return ResponseEntity.ok(accountService.createUser(userDTO));
     }
 
     @PostMapping(path = "/signin")
     public ResponseEntity<?> signin(@RequestBody UserDTO userDTO) {
-        Map<String, Object> clientCredentials = new HashMap<>();
-        clientCredentials.put("secret", clientSecret);
-        clientCredentials.put("grant_type", "password");
-        Configuration configuration =
-                new Configuration(authServerUrl, realm, clientId, clientCredentials, null);
-        AuthzClient authzClient = AuthzClient.create(configuration);
-        AccessTokenResponse response =
-                authzClient.obtainAccessToken(userDTO.getEmail(), userDTO.getPassword());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(accountService.signin(userDTO));
     }
 }
