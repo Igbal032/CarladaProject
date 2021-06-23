@@ -39,7 +39,7 @@ public class UserDAOImpl implements UserDAO {
             }
             Double totalAmount = appUser.get().getAmount() + amount;
             appUser.get().setAmount(totalAmount);
-            Transaction transaction = createTransaction(null, totalAmount, appUser.get(), TransactionType.INCREASE_BALANCE);
+            Transaction transaction  = createTransaction(null,amount,appUser.get(), TransactionType.INCREASE_BALANCE);
             userRepo.save(appUser.get());
             return transaction;
         }
@@ -109,5 +109,9 @@ public class UserDAOImpl implements UserDAO {
             throw new UserNotFound("User Not Found");
 
         return appUser.get();
+    }
+
+    public AppUser saveUser(AppUser user){
+        return userRepo.save(user);
     }
 }

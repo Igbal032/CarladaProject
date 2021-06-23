@@ -21,7 +21,9 @@ public interface ListingRepo extends JpaRepository<Listing, Long>, JpaSpecificat
 
     @Transactional
     @Modifying
-    @Query("update Listing  set isActive=false where expiredAt<= current_date")
+    @Query("update Listing  set isActive=false where expiredAt<= current_date and autoPay=false and isActive=true ")
     void disableExpired();
+    @Query("from Listing where expiredAt<= current_date and autoPay=false and isActive=true ")
+    List<Listing> getWaitingExpired();
 }
 

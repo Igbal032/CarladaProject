@@ -14,6 +14,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -91,7 +92,7 @@ public class ListingDAOImpl implements ListingDAO {
     }
 
     @Override
-    public void disableExpired() {
-        listingRepository.disableExpired();
+    public List<Listing> getWaitingExpired() {
+        return listingRepository.getWaitingExpired();
     }
 }

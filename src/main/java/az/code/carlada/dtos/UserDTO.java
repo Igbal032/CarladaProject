@@ -10,6 +10,8 @@ public class UserDTO {
     private String password;
     private String firstname;
     private String lastname;
+    private String phoneNumber;
+    private double amount;
     private int statusCode;
     private String status;
 }

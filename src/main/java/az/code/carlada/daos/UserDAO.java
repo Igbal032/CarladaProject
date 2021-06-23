@@ -9,5 +9,6 @@ public interface UserDAO {
     Transaction addAmount(String usernames, Double amount);
     Transaction payForListingStatus(Long listingId, Status statusType, String username);
     Transaction createTransaction(Long listingId, Double amount, AppUser appUser, TransactionType transactionType);
+    AppUser saveUser(AppUser appUser);
     AppUser getUserByUsername(String username);
 }
