@@ -11,13 +11,21 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 public interface ListingService {
-    PaginationDTO<ListingListDTO> getAllListing(Integer page, Integer count);
+    PaginationDTO<ListingListDTO> getListingsByActive(Integer page, Integer count, boolean isActive);
+
     PaginationDTO<ListingListDTO> getAllVipListing(Integer page, Integer count);
+
     ListingGetDTO getListingById(Long id);
+
     PaginationDTO<ListingListDTO> getAllListingBySlug(String username, Integer page, Integer count);
+
     PaginationDTO<ListingListDTO> getAllListingByProfile(Integer page, Integer count);
+
     ListingGetDTO getListingByIdByProfile(Long id);
+
     ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO);
+
     void delete(long id);
+
     Image setThumbnailForListing(Long listingId, MultipartFile file) throws IOException;
 }

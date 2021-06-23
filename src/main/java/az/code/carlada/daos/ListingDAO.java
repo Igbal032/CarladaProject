@@ -5,7 +5,7 @@ import org.springframework.data.domain.Page;
 
 public interface ListingDAO {
 
-    Page<Listing> getAllListing(Integer page,Integer count);
+    Page<Listing> getListingsByActive(Integer page,Integer count,boolean isActive);
     Page<Listing> getAllVipListing(Integer page,Integer count);
     Page<Listing> getAllListingByUsername(String username,Integer page,Integer count);
     Listing getListingByUsernameById(String username, Long id);

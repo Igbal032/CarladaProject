@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+
 import az.code.carlada.services.SearchService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,17 +32,17 @@ public class ListingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ListingListDTO>> getAllListing(@RequestParam Integer page, @RequestParam Integer count){
-        return new ResponseEntity(listingService.getAllListing(page, count), HttpStatus.OK);
+    public ResponseEntity<List<ListingListDTO>> getListingsByActive(@RequestParam Integer page, @RequestParam Integer count) {
+        return new ResponseEntity(listingService.getListingsByActive(page, count, true), HttpStatus.OK);
     }
 
     @GetMapping("/vip")
-    public ResponseEntity<List<ListingListDTO>> getAllVipListing(@RequestParam Integer page, @RequestParam Integer count){
+    public ResponseEntity<List<ListingListDTO>> getAllVipListing(@RequestParam Integer page, @RequestParam Integer count) {
         return new ResponseEntity(listingService.getAllVipListing(page, count), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ListingListDTO> getListingByIdNoLogin(@PathVariable Long id){
+    public ResponseEntity<ListingListDTO> getListingByIdNoLogin(@PathVariable Long id) {
         return new ResponseEntity(listingService.getListingById(id), HttpStatus.OK);
     }
 
@@ -56,12 +57,12 @@ public class ListingController {
     }
 
     @GetMapping(path = "/{id}/images")
-    public ResponseEntity<Image> getAllImgByListingId(@PathVariable Long id){
+    public ResponseEntity<Image> getAllImgByListingId(@PathVariable Long id) {
         return new ResponseEntity(imageService.getAllImgFromListing(id), OK);
     }
 
     @GetMapping(path = "/{id}/images/{id1}")
-    public ResponseEntity<Image> getImgByListingId(@PathVariable Long id, @PathVariable Long id1){
+    public ResponseEntity<Image> getImgByListingId(@PathVariable Long id, @PathVariable Long id1) {
         return new ResponseEntity(imageService.getImgFromListing(id, id1), OK);
     }
 
