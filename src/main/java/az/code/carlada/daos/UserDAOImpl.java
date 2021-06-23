@@ -1,15 +1,15 @@
 package az.code.carlada.daos;
 
-import az.code.carlada.enums.Status;
 import az.code.carlada.enums.TransactionType;
 import az.code.carlada.exceptions.EnoughBalanceException;
 import az.code.carlada.exceptions.IllegalSignException;
-import az.code.carlada.exceptions.ListingNotFound;
+import az.code.carlada.exceptions.StatusNotFoundException;
 import az.code.carlada.exceptions.UserNotFound;
 import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Listing;
+import az.code.carlada.models.Status;
 import az.code.carlada.models.Transaction;
-import az.code.carlada.repositories.ListingRepo;
+import az.code.carlada.repositories.StatusRepo;
 import az.code.carlada.repositories.TransactionRepo;
 import az.code.carlada.repositories.UserRepo;
 import org.springframework.stereotype.Component;
@@ -23,11 +23,13 @@ public class UserDAOImpl implements UserDAO {
     UserRepo userRepo;
     TransactionRepo transactionRepo;
     ListingDAO listingDAO;
+    StatusRepo statusRepo;
 
-    public UserDAOImpl(UserRepo userRepo, TransactionRepo transactionRepo, ListingDAO listingDAO) {
+    public UserDAOImpl(StatusRepo statusRepo,UserRepo userRepo, TransactionRepo transactionRepo, ListingDAO listingDAO) {
         this.userRepo = userRepo;
         this.transactionRepo = transactionRepo;
         this.listingDAO = listingDAO;
+        this.statusRepo = statusRepo;
     }
 
     @Override
@@ -39,63 +41,50 @@ public class UserDAOImpl implements UserDAO {
             }
             Double totalAmount = appUser.get().getAmount() + amount;
             appUser.get().setAmount(totalAmount);
-            Transaction transaction  = createTransaction(null,amount,appUser.get(), TransactionType.INCREASE_BALANCE);
+            Transaction transaction  = createTransaction(null,amount,appUser.get());
             userRepo.save(appUser.get());
             return transaction;
         }
         throw new UserNotFound("User Not Found");
     }
 
+
     @Override
-    public Transaction payForListingStatus(Long listingId, Status statusType, String username) {
-        Double vipStatus = Status.VIP.getStatusAmount();
-        Double standardStatus = Status.STANDARD.getStatusAmount();
-        Double defaultStatus = Status.FREE.getStatusAmount();
+    public Status getStatusByName(String statusName) {
+        Status status = statusRepo.getStatusByStatusName(statusName);
+        if (status==null)
+            throw new StatusNotFoundException("Status does not exsist");
+        return status;
+    }
+
+    @Override
+    public Transaction payForListingStatus(Long listingId, String statusType, String username) {
+        Status status = getStatusByName(statusType);
         AppUser appUser = getUserByUsername(username);
         Transaction transaction;
         Listing listing = listingDAO.getListingById(listingId);
-        switch (statusType) {
-            case VIP:
-                if (vipStatus <= appUser.getAmount()) {
-                    appUser.setAmount(appUser.getAmount() - vipStatus);
-                    transaction = createTransaction(listingId, vipStatus, appUser, TransactionType.VIP_STATUS_PAYMENT);
-                } else {
-                    throw new EnoughBalanceException("Balance is not enough");
-                }
-                break;
-            case FREE:
-                if (defaultStatus <= appUser.getAmount()) {
-                    appUser.setAmount(appUser.getAmount() - defaultStatus);
-                    transaction = createTransaction(listingId, defaultStatus, appUser, TransactionType.NEW);
-                } else {
-                    throw new EnoughBalanceException("Balance is not enough");
-                }
-                break;
-            case STANDARD:
-                if (standardStatus <= appUser.getAmount()) {
-                    appUser.setAmount(appUser.getAmount() - standardStatus);
-                    transaction = createTransaction(listingId, standardStatus, appUser, TransactionType.UPDATE_PAYMENT);
-                } else {
-                    throw new EnoughBalanceException("Balance is not enough");
-                }
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + statusType);
+        if (statusType.equals("FREE")){
+            return null;
         }
-        listing.setType(statusType);
+        if (status.getPrice() <= appUser.getAmount()) {
+            appUser.setAmount(appUser.getAmount() - status.getPrice());
+            transaction = createTransaction(listingId, (double) status.getPrice() , appUser);
+        } else {
+            throw new EnoughBalanceException("Balance is not enough");
+        }
+        listing.setStatusType(status);
         listingDAO.saveListing(listing);
-        userRepo.save(appUser);
+        saveUser(appUser);
         return transaction;
     }
 
 
     @Override
-    public Transaction createTransaction(Long listingId, Double amount, AppUser appUser, TransactionType transactionType) {
+    public Transaction createTransaction(Long listingId, Double amount, AppUser appUser) {
         Transaction transaction = Transaction.builder()
                 .listingId(listingId)
                 .appUser(appUser)
                 .amount(amount)
-                .transactionType(transactionType)
                 .createdDate(LocalDateTime.now())
                 .build();
         transactionRepo.save(transaction);
@@ -110,6 +99,7 @@ public class UserDAOImpl implements UserDAO {
 
         return appUser.get();
     }
+
 
     public AppUser saveUser(AppUser user){
         return userRepo.save(user);

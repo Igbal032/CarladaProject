@@ -15,8 +15,6 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Enumerated(EnumType.STRING)
-    private TransactionType transactionType;
     @ManyToOne
     @JoinColumn(name="appuser_id", nullable=false)
     private AppUser appUser;

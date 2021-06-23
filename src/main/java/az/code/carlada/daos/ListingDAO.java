@@ -1,5 +1,6 @@
 package az.code.carlada.daos;
 
+import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Listing;
 import org.springframework.data.domain.Page;
 
@@ -8,6 +9,7 @@ import java.util.List;
 public interface ListingDAO {
 
     Page<Listing> getListingsByActive(Integer page,Integer count,boolean isActive);
+    List<Listing> getAllActiveListingsByUser(AppUser appUser);
     Page<Listing> getAllVipListing(Integer page,Integer count);
     Page<Listing> getAllListingByUsername(String username,Integer page,Integer count);
     Listing getListingByUsernameById(String username, Long id);

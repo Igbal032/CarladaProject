@@ -49,8 +49,7 @@ public class ModelMapperComponent {
     }
 
     public Listing convertLintingCreationToListing(ListingCreationDTO listingCreationDTO){
-        AppUser appUser = userDAO.getUserByUsername("shafig");
-
+        AppUser appUser = userDAO.getUserByUsername("igbal-hoff");
         CarDetail carDetail = CarDetail.builder()
                 .bodyType(BasicUtil.getEnumFromString(BodyType.class, listingCreationDTO.getBodyType()))
                 .color(BasicUtil.getEnumFromString(Color.class, listingCreationDTO.getColor()))
@@ -69,12 +68,13 @@ public class ModelMapperComponent {
                 .cashOption(listingCreationDTO.getCashOption())
                 .carDetail(carDetail)
                 .build();
+        Status status= userDAO.getStatusByName(listingCreationDTO.getType());
         Listing listing = Listing.builder()
                 .id(listingCreationDTO.getId())
                 .isActive(true)
                 .description(listingCreationDTO.getDescription())
                 .appUser(appUser)
-                .type(BasicUtil.getEnumFromString(Status.class, listingCreationDTO.getType()))
+                .statusType(status)
                 .city(dictionaryDAO.findCityById(listingCreationDTO.getCityId()))
                 .car(car)
                 .autoPay(listingCreationDTO.getAuto_pay())
@@ -103,9 +103,10 @@ public class ModelMapperComponent {
 
 
     public ListingGetDTO convertListingToListingGetDto(Listing i) {
+
         return ListingGetDTO.builder()
                 .id(i.getId())
-                .type(i.getType().name())
+                .type(i.getStatusType().getStatusName())
                 .year(i.getCar().getYear())
                 .autoPay(i.isAutoPay())
                 .carSpecs(mapList(i.getCar().getCarDetail().getCarSpecifications(), CarSpecDTO.class))
@@ -131,14 +132,13 @@ public class ModelMapperComponent {
     }
 
     public Listing convertCreationDtoToListing(ListingCreationDTO i) {
+        Status status= userDAO.getStatusByName(i.getType());
         return Listing.builder()
                 .autoPay(i.getAuto_pay())
                 .description(i.getDescription())
-                .type(getEnumFromString(Status.class, i.getType()))
+                .statusType(status)
                 .thumbnailUrl(i.getThumbnailUrl())
                 .build();
-
-
     }
 
     public Subscription convertDTOToSubscription(SubscriptionDTO s) {

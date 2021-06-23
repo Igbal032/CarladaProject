@@ -9,6 +9,7 @@ import az.code.carlada.daos.UserDAO;
 import az.code.carlada.dtos.*;
 import az.code.carlada.enums.*;
 import az.code.carlada.models.*;
+import az.code.carlada.repositories.StatusRepo;
 import az.code.carlada.utils.BasicUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,14 +31,16 @@ public class ListingServiceImpl implements ListingService {
     UserDAO userDAO;
     SchedulerExecutorConfig schExecService;
     ImageService imageService;
+    StatusRepo statusRepo;
 
-    public ListingServiceImpl(ListingDAO listingDAO, ModelMapperComponent mapperService, DictionaryDAO dictionaryDAO, UserDAO userDAO, SchedulerExecutorConfig schExecService, ImageService imageService) {
+    public ListingServiceImpl(StatusRepo statusRepo,ListingDAO listingDAO, ModelMapperComponent mapperService, DictionaryDAO dictionaryDAO, UserDAO userDAO, SchedulerExecutorConfig schExecService, ImageService imageService) {
         this.listingDAO = listingDAO;
         this.mapperService = mapperService;
         this.dictionaryDAO = dictionaryDAO;
         this.userDAO = userDAO;
         this.schExecService = schExecService;
         this.imageService = imageService;
+        this.statusRepo = statusRepo;
     }
 
     @Override
@@ -87,9 +91,23 @@ public class ListingServiceImpl implements ListingService {
 
     @Override
     public ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO) {
-        Listing list = listingDAO.createListing(mapperService.convertLintingCreationToListing(listingCreationDTO));
-        schExecService.runSubscriptionJob(list);
-        return mapperService.convertListingToListingGetDto(list);
+        AppUser user = userDAO.getUserByUsername("igbal-hoff");
+        List<Listing> listings= listingDAO.getAllActiveListingsByUser(user);
+        Listing listing = mapperService.convertLintingCreationToListing(listingCreationDTO);
+        Optional<Listing> checkListing = listings.stream()
+                .filter(w-> w.getStatusType().getStatusName().equals("FREE") && w.isActive()).findFirst();
+        Status status;
+        if (checkListing.isPresent()){
+            status = statusRepo.getStatusByStatusName("STANDARD");
+        }
+        else
+            status = statusRepo.getStatusByStatusName("FREE");
+        listing.setStatusType(status);
+        Listing listing1 = listingDAO.createListing(listing);
+        userDAO.payForListingStatus(listing1.getId(),status.getStatusName(),user.getUsername());
+        System.out.println("sdas");
+        schExecService.runSubscriptionJob(listing1);
+        return mapperService.convertListingToListingGetDto(listing1);
     }
 
     @Override
