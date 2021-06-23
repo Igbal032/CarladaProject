@@ -69,7 +69,7 @@ public class ModelMapperComponent {
                 .cashOption(listingCreationDTO.getCashOption())
                 .carDetail(carDetail)
                 .build();
-        return Listing.builder()
+        Listing listing = Listing.builder()
                 .id(listingCreationDTO.getId())
                 .isActive(true)
                 .description(listingCreationDTO.getDescription())
@@ -82,7 +82,9 @@ public class ModelMapperComponent {
                 .createdAt(LocalDateTime.now())
                 .expiredAt(LocalDateTime.now().plusDays(30))
                 .build();
-
+        car.setListing(listing);
+        carDetail.setCar(car);
+        return listing;
     }
 
     public ListingListDTO convertListingToListDto(Listing i) {

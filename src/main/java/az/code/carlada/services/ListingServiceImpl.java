@@ -40,8 +40,8 @@ public class ListingServiceImpl implements ListingService {
     }
 
     @Override
-    public PaginationDTO<ListingListDTO> getAllListing(Integer page, Integer count) {
-        Page<Listing> p = listingDAO.getAllListing(page, count);
+    public PaginationDTO<ListingListDTO> getListingsByActive(Integer page, Integer count, boolean isActive) {
+        Page<Listing> p = listingDAO.getListingsByActive(page, count, isActive);
         List<ListingListDTO> listingListDTOS = p.getContent().stream()
                 .map(i -> mapperService.convertListingToListDto(i))
                 .collect(Collectors.toList());

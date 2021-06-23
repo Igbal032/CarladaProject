@@ -12,7 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,9 +29,11 @@ public class ListingDAOImpl implements ListingDAO {
     }
 
     @Override
-    public Page<Listing> getAllListing(Integer page, Integer count) {
+    public Page<Listing> getListingsByActive(Integer page, Integer count, boolean isActive) {
         Pageable pageable = PageRequest.of(page, count);
-        return listingRepository.findAll(pageable);
+        Specification<Listing> spec = Specification
+                .where((root, query, cb) -> cb.equal(root.get("isActive"), isActive));
+        return listingRepository.findAll(spec, pageable);
     }
 
     @Override
@@ -89,6 +90,7 @@ public class ListingDAOImpl implements ListingDAO {
         else
             listingRepository.deleteById(id);
     }
+
     @Override
     public List<Listing> getWaitingExpired() {
         return listingRepository.getWaitingExpired();
