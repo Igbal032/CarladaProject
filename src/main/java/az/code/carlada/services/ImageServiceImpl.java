@@ -1,6 +1,5 @@
 package az.code.carlada.services;
 
-import az.code.carlada.configs.ConfigReader;
 import az.code.carlada.daos.ImageDAO;
 import az.code.carlada.dtos.ImageDTO;
 import az.code.carlada.models.Image;
@@ -18,7 +17,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +30,12 @@ public class ImageServiceImpl implements ImageService{
     ImageDAO imageDAO;
     Storage storage;
 
+    @Value("${firebase.project.id}")
+    String projectId;
+
+    @Value("${firebase.bucket.url}")
+    String bucket;
+
     public ImageServiceImpl(ImageDAO imageDAO) {
         this.imageDAO = imageDAO;
     }
@@ -42,7 +46,7 @@ public class ImageServiceImpl implements ImageService{
             ClassPathResource serviceAccount = new ClassPathResource("firebase.json");
             storage = StorageOptions.newBuilder().
                     setCredentials(GoogleCredentials.fromStream(serviceAccount.getInputStream())).
-                    setProjectId(ConfigReader.getConfigProperty("firebase.project.id")).build().getService();
+                    setProjectId(projectId).build().getService();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -73,7 +77,7 @@ public class ImageServiceImpl implements ImageService{
         Map<String, String> map = new HashMap<>();
         map.put("firebaseStorageDownloadTokens", imageName);
 
-        BlobId blobId = BlobId.of(ConfigReader.getConfigProperty("firebase.bucket.url"), imageName);
+        BlobId blobId = BlobId.of(bucket, imageName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setMetadata(map)
                 .setContentType(file.getContentType())
@@ -87,7 +91,7 @@ public class ImageServiceImpl implements ImageService{
         Image image = imageDAO.findImageById(imgId);
         Credentials credentials = GoogleCredentials.fromStream(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("firebase.json")));
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-        BlobId blobId = BlobId.of(ConfigReader.getConfigProperty("firebase.bucket.url"), image.getName());
+        BlobId blobId = BlobId.of(bucket, image.getName());
         storage.delete(blobId);
         imageDAO.deleteImgFromListing(listingId, imgId);
     }

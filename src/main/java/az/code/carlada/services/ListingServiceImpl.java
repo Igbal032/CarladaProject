@@ -11,7 +11,6 @@ import az.code.carlada.enums.*;
 import az.code.carlada.models.*;
 import az.code.carlada.utils.BasicUtil;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

@@ -45,15 +45,14 @@ public class ProfileController {
     }
 
     @PutMapping("/listings/{id}")
-
     public ResponseEntity<List<ListingGetDTO>> createNewListing(@PathVariable Long id, @RequestBody ListingCreationDTO listingCreationDTO) {
         return new ResponseEntity(listingService.saveListing(listingCreationDTO.toBuilder().id(id).build()), HttpStatus.OK);
     }
 
     @DeleteMapping("/listings/{id}")
-    public ResponseEntity deleteListing(@PathVariable long id) {
+    public ResponseEntity<String> deleteListing(@PathVariable long id) {
         listingService.delete(id);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity("Listing is deleted succesfully" ,HttpStatus.OK);
     }
 
     @GetMapping("/listings/{id}")
