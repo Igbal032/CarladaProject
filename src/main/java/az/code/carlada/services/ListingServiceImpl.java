@@ -86,49 +86,7 @@ public class ListingServiceImpl implements ListingService {
 
     @Override
     public ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO) {
-
-        Model model = dictionaryDAO.findModelById(listingCreationDTO.getModelId());
-        Make make = dictionaryDAO.findMakeById(listingCreationDTO.getMakeId());
-        City city = dictionaryDAO.findCityById(listingCreationDTO.getCityId());
-        AppUser appUser = userDAO.getUserByUsername("elgunvm");
-
-        model.setMake(make);
-        CarDetail carDetail = CarDetail.builder()
-                .bodyType(BasicUtil.getEnumFromString(BodyType.class, listingCreationDTO.getBodyType()))
-                .color(BasicUtil.getEnumFromString(Color.class, listingCreationDTO.getColor()))
-                .fuelType(BasicUtil.getEnumFromString(FuelType.class, listingCreationDTO.getFuelType()))
-                .gearBox(BasicUtil.getEnumFromString(Gearbox.class, listingCreationDTO.getGearBox()))
-                .carSpecifications(dictionaryDAO.findAllSpecificationById(listingCreationDTO.getCarSpecIds()))
-                .build();
-
-        Car car = Car.builder()
-                .model(model)
-                .year(listingCreationDTO.getYear())
-                .price(listingCreationDTO.getPrice())
-                .mileage(listingCreationDTO.getMileage())
-                .loanOption(listingCreationDTO.getCreditOption())
-                .barterOption(listingCreationDTO.getBarterOption())
-                .leaseOption(listingCreationDTO.getLeaseOption())
-                .cashOption(listingCreationDTO.getCashOption())
-                .carDetail(carDetail)
-                .build();
-
-        Listing listing = Listing.builder()
-                .id(listingCreationDTO.getId())
-                .isActive(true)
-                .description(listingCreationDTO.getDescription())
-                .appUser(appUser)
-                .type(BasicUtil.getEnumFromString(Status.class, listingCreationDTO.getType()))
-                .city(city)
-                .car(car)
-                .autoPay(listingCreationDTO.getAuto_pay())
-                .updatedAt(LocalDateTime.now())
-                .createdAt(LocalDateTime.now())
-                .expiredAt(LocalDateTime.now().plusDays(30))
-                .build();
-        carDetail.setCar(car);
-        car.setListing(listing);
-        Listing list = listingDAO.createListing(listing);
+        Listing list = listingDAO.createListing(mapperService.convertLintingCreationToListing(listingCreationDTO));
         schExecService.runSubscriptionJob(list);
         return mapperService.convertListingToListingGetDto(list);
     }

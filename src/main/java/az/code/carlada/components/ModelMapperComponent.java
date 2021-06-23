@@ -2,14 +2,12 @@ package az.code.carlada.components;
 
 
 import az.code.carlada.daos.DictionaryDAO;
+import az.code.carlada.daos.UserDAO;
 import az.code.carlada.dtos.*;
-import az.code.carlada.enums.BodyType;
-import az.code.carlada.enums.Color;
-import az.code.carlada.enums.FuelType;
-import az.code.carlada.enums.Status;
+import az.code.carlada.enums.*;
 import az.code.carlada.exceptions.DataNotFound;
-import az.code.carlada.models.Listing;
-import az.code.carlada.models.Subscription;
+import az.code.carlada.models.*;
+import az.code.carlada.utils.BasicUtil;
 import lombok.Builder;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -27,10 +25,12 @@ import static az.code.carlada.utils.BasicUtil.getEnumFromString;
 public class ModelMapperComponent {
     public ModelMapper modelMapper;
     public DictionaryDAO dictionaryDAO;
+    public UserDAO userDAO;
 
-    public ModelMapperComponent(ModelMapper modelMapper, DictionaryDAO dictionaryDAO) {
+    public ModelMapperComponent(ModelMapper modelMapper, DictionaryDAO dictionaryDAO, UserDAO userDAO) {
         this.modelMapper = modelMapper;
         this.dictionaryDAO = dictionaryDAO;
+        this.userDAO = userDAO;
     }
 
     public <E, T> List<T> mapList(Collection<? extends E> list, Class<T> type) {
@@ -48,6 +48,42 @@ public class ModelMapperComponent {
         return list.stream().map(i -> modelMapper.map(i, type)).collect(Collectors.toSet());
     }
 
+    public Listing convertLintingCreationToListing(ListingCreationDTO listingCreationDTO){
+        AppUser appUser = userDAO.getUserByUsername("shafig");
+
+        CarDetail carDetail = CarDetail.builder()
+                .bodyType(BasicUtil.getEnumFromString(BodyType.class, listingCreationDTO.getBodyType()))
+                .color(BasicUtil.getEnumFromString(Color.class, listingCreationDTO.getColor()))
+                .fuelType(BasicUtil.getEnumFromString(FuelType.class, listingCreationDTO.getFuelType()))
+                .gearBox(BasicUtil.getEnumFromString(Gearbox.class, listingCreationDTO.getGearBox()))
+                .carSpecifications(dictionaryDAO.findAllSpecificationById(listingCreationDTO.getCarSpecIds()))
+                .build();
+        Car car = Car.builder()
+                .model(dictionaryDAO.findModelById(listingCreationDTO.getModelId()))
+                .year(listingCreationDTO.getYear())
+                .price(listingCreationDTO.getPrice())
+                .mileage(listingCreationDTO.getMileage())
+                .loanOption(listingCreationDTO.getCreditOption())
+                .barterOption(listingCreationDTO.getBarterOption())
+                .leaseOption(listingCreationDTO.getLeaseOption())
+                .cashOption(listingCreationDTO.getCashOption())
+                .carDetail(carDetail)
+                .build();
+        return Listing.builder()
+                .id(listingCreationDTO.getId())
+                .isActive(true)
+                .description(listingCreationDTO.getDescription())
+                .appUser(appUser)
+                .type(BasicUtil.getEnumFromString(Status.class, listingCreationDTO.getType()))
+                .city(dictionaryDAO.findCityById(listingCreationDTO.getCityId()))
+                .car(car)
+                .autoPay(listingCreationDTO.getAuto_pay())
+                .updatedAt(LocalDateTime.now())
+                .createdAt(LocalDateTime.now())
+                .expiredAt(LocalDateTime.now().plusDays(30))
+                .build();
+
+    }
 
     public ListingListDTO convertListingToListDto(Listing i) {
         return ListingListDTO.builder()

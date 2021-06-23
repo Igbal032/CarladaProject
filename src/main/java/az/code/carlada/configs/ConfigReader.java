@@ -10,7 +10,7 @@ public class ConfigReader {
 
     public static String getConfigProperty(String property){
         Properties prop = new Properties();
-        String fileName = "app.config";
+        String fileName = "/home/shafig/Code/1506Proj/CarladaProject/src/main/resources/app.config";
         InputStream inputStream = null;
         try {
             inputStream = new FileInputStream(fileName);
