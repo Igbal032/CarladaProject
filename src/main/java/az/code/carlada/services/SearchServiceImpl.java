@@ -8,8 +8,10 @@ import az.code.carlada.dtos.SearchDTO;
 import az.code.carlada.models.Listing;
 import az.code.carlada.models.Subscription;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ public class SearchServiceImpl implements SearchService {
         this.mapperService = mapperService;
     }
 
+    @Override
     public PaginationDTO<ListingListDTO> searchListings(Map<String, String> params) {
         Page<Listing> l = searchDAO.searchListingsByPage(mapperService.modelMapper.map(params, SearchDTO.class));
         List<ListingListDTO> listDTOS = l.getContent().stream()
