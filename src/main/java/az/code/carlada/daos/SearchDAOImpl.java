@@ -13,7 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Predicate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 public class SearchDAOImpl implements SearchDAO {
@@ -29,28 +33,23 @@ public class SearchDAOImpl implements SearchDAO {
         this.subSpecs = subSpecs;
     }
 
+
     @Override
-    public List<Listing> searchAllListings(Subscription sub) {
-        Long makeId = sub.getMake() == null ? null : sub.getMake().getId();
-        Long modelId = sub.getModel() == null ? null : sub.getModel().getId();
-        Long cityId = sub.getCity() == null ? null : sub.getCity().getId();
-
+    public List<Listing> searchAllListingsByExpireDate() {
         Specification<Listing> spec = Specification
-                .where(listingSpecs.equalMake(makeId))
-                .and(listingSpecs.equalModel(modelId))
-                .and(listingSpecs.equalLocation(cityId))
-                .and(listingSpecs.equalFuelType(sub.getFuelType()))
-                .and(listingSpecs.equalBodyType(sub.getBodyType()))
-                .and(listingSpecs.betweenYears(sub.getMinYear(), sub.getMaxYear()))
-                .and(listingSpecs.betweenPrices(sub.getMinPrice(), sub.getMaxPrice()))
-                .and(listingSpecs.betweenMileages(sub.getMinMileage(), sub.getMaxMileage()))
-                .and(listingSpecs.equalLoanOption(sub.getLoanOption()))
-                .and(listingSpecs.equalBarterOption(sub.getBarterOption()))
-                .and(listingSpecs.equalCashOption(sub.getCashOption()))
-                .and(listingSpecs.equalLeaseOption(sub.getLeaseOption()));
-
+                .where((root, query, cb) ->
+                                cb.and(cb.lessThanOrEqualTo(root.get("expiredAt"), LocalDateTime.now().plusDays(1)),
+                                        cb.isTrue(root.get("isActive"))));
         return listingRepo.findAll(spec);
     }
+//    @Override
+//    public List<Listing> searchAllListingsWithExpiredDate() {
+//        Specification<Listing> spec = Specification
+//                .where((root, query, cb) ->
+//                                cb.and(cb.lessThanOrEqualTo(root.get("expiredAt"), LocalDateTime.now()),
+//                                        cb.isTrue(root.get("isActive"))));
+//        return listingRepo.findAll(spec);
+//    }
 
     @Override
     public List<Subscription> searchAllSubscriptions(Listing list) {
