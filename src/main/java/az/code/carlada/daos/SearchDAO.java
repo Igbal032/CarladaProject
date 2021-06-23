@@ -9,7 +9,8 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface SearchDAO {
-    List<Listing> searchAllListings(Subscription sub);
+    List<Listing> searchAllListingsByExpireDate();
+//    List<Listing> searchAllListingsWithExpiredDate();
     List<Subscription> searchAllSubscriptions(Listing list);
     Page<Listing> searchListingsByPage(SearchDTO params);
 }

@@ -13,4 +13,5 @@ public interface ListingDAO {
     Listing createListing(Listing listing);
     void saveListing(Listing listing);
     void delete(long id);
+    void disableExpired();
 }
