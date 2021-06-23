@@ -49,9 +49,9 @@ public class ProfileController {
     }
 
     @DeleteMapping("/listings/{id}")
-    public ResponseEntity deleteListing(@PathVariable long id) {
+    public ResponseEntity<String> deleteListing(@PathVariable long id) {
         listingService.delete(id);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity("Listing is deleted succesfully" ,HttpStatus.OK);
     }
 
     @GetMapping("/listings/{id}")

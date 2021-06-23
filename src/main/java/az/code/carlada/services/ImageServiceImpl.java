@@ -30,7 +30,7 @@ public class ImageServiceImpl implements ImageService{
     @Value("${firebase.project.id}")
     public String projectId;
     @Value("${firebase.bucket.url}")
-    public String blobUrl;
+    public String bucket;
     ImageDAO imageDAO;
     Storage storage;
 
@@ -74,8 +74,7 @@ public class ImageServiceImpl implements ImageService{
         String imageName = ImageUtil.generateFileName(file.getOriginalFilename());
         Map<String, String> map = new HashMap<>();
         map.put("firebaseStorageDownloadTokens", imageName);
-
-        BlobId blobId = BlobId.of(blobUrl, imageName);
+        BlobId blobId = BlobId.of(bucket, imageName);
         BlobInfo blobInfo = BlobInfo.newBuilder(blobId)
                 .setMetadata(map)
                 .setContentType(file.getContentType())
@@ -89,7 +88,7 @@ public class ImageServiceImpl implements ImageService{
         Image image = imageDAO.findImageById(imgId);
         Credentials credentials = GoogleCredentials.fromStream(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("firebase.json")));
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
-        BlobId blobId = BlobId.of(blobUrl, image.getName());
+        BlobId blobId = BlobId.of(bucket, image.getName());
         storage.delete(blobId);
         imageDAO.deleteImgFromListing(listingId, imgId);
     }

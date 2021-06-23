@@ -32,7 +32,7 @@ public class ListingController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ListingListDTO>> getListingsByActive(@RequestParam Integer page, @RequestParam Integer count) {
+    public ResponseEntity<List<ListingListDTO>> getListingsByActiveStatus(@RequestParam Integer page, @RequestParam Integer count) {
         return new ResponseEntity(listingService.getListingsByActive(page, count, true), HttpStatus.OK);
     }
 
@@ -72,8 +72,8 @@ public class ListingController {
     }
 
     @DeleteMapping(path = "/{id}/images/{id1}")
-    public ResponseEntity deleteImgFromListingById(@PathVariable Long id, @PathVariable Long id1) throws IOException {
+    public ResponseEntity<String> deleteImgFromListingById(@PathVariable Long id, @PathVariable Long id1) throws IOException {
         imageService.deleteImgFromListing(id, id1);
-        return new ResponseEntity(OK);
+        return new ResponseEntity("Image is deleted succesfully",OK);
     }
 }
