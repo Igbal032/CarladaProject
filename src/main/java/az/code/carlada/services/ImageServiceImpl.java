@@ -2,6 +2,7 @@ package az.code.carlada.services;
 
 import az.code.carlada.daos.ImageDAO;
 import az.code.carlada.dtos.ImageDTO;
+import az.code.carlada.dtos.UserDTO;
 import az.code.carlada.models.Image;
 import az.code.carlada.utils.ImageUtil;
 import com.google.auth.Credentials;
@@ -25,7 +26,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class ImageServiceImpl implements ImageService{
+public class ImageServiceImpl implements ImageService {
 
     @Value("${firebase.project.id}")
     public String projectId;
@@ -70,7 +71,7 @@ public class ImageServiceImpl implements ImageService{
     }
 
     @Override
-    public Image addImgToListing(Long listingId, MultipartFile file) throws IOException {
+    public Image addImgToListing(Long listingId, MultipartFile file, String username) throws IOException {
         String imageName = ImageUtil.generateFileName(file.getOriginalFilename());
         Map<String, String> map = new HashMap<>();
         map.put("firebaseStorageDownloadTokens", imageName);
@@ -80,16 +81,16 @@ public class ImageServiceImpl implements ImageService{
                 .setContentType(file.getContentType())
                 .build();
         storage.create(blobInfo, file.getInputStream());
-        return imageDAO.addImgToListing(listingId,imageName);
+        return imageDAO.addImgToListing(listingId, imageName, username);
     }
 
     @Override
-    public void deleteImgFromListing(Long listingId, Long imgId) throws IOException {
+    public void deleteImgFromListing(Long listingId, Long imgId, String username) throws IOException {
         Image image = imageDAO.findImageById(imgId);
         Credentials credentials = GoogleCredentials.fromStream(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("firebase.json")));
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         BlobId blobId = BlobId.of(bucket, image.getName());
         storage.delete(blobId);
-        imageDAO.deleteImgFromListing(listingId, imgId);
+        imageDAO.deleteImgFromListing(listingId, imgId,username);
     }
 }

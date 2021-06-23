@@ -6,7 +6,6 @@ import az.code.carlada.daos.UserDAO;
 import az.code.carlada.dtos.SubscriptionDTO;
 import az.code.carlada.dtos.SubscriptionListDTO;
 import az.code.carlada.models.AppUser;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
 @Service
 public class SubscriptionServiceImpl implements SubscriptionService {
     SubscriptionDAO subDAO;
-    AppUser appUser;
     ModelMapperComponent mapperService;
     UserDAO userDAO;
 
@@ -27,25 +25,25 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
 
     @Override
-    public SubscriptionListDTO saveSubscription(SubscriptionDTO subDTO) {
-        return mapperService.convertSubscriptionToListDTO(subDAO.saveSubscription(subDTO, appUser));
+    public SubscriptionListDTO saveSubscription(SubscriptionDTO subDTO, String username) {
+        return mapperService.convertSubscriptionToListDTO(subDAO.saveSubscription(subDTO, username));
     }
 
     @Override
-    public List<SubscriptionListDTO> getSubscriptions() {
-        return subDAO.getSubscriptions(appUser)
+    public List<SubscriptionListDTO> getSubscriptions(String username) {
+        return subDAO.getSubscriptions(username)
                 .stream()
                 .map(i -> mapperService.convertSubscriptionToListDTO(i))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public SubscriptionListDTO getSubscriptionById(Long id) {
-        return mapperService.convertSubscriptionToListDTO(subDAO.getSubscription(id, appUser));
+    public SubscriptionListDTO getSubscriptionById(Long id, String username) {
+        return mapperService.convertSubscriptionToListDTO(subDAO.getSubscription(id, username));
     }
 
     @Override
-    public void deleteSubscription(Long id) {
-        subDAO.deleteSubscription(id, appUser);
+    public void deleteSubscription(Long id, String username) {
+        subDAO.deleteSubscription(id, username);
     }
 }

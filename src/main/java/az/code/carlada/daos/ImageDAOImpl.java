@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class ImageDAOImpl implements ImageDAO{
+public class ImageDAOImpl implements ImageDAO {
     ImageRepo imageRepository;
     ListingDAO listingDAO;
 
@@ -19,7 +19,7 @@ public class ImageDAOImpl implements ImageDAO{
     }
 
     @Override
-    public Image addImgToListing(Long id, String name) {
+    public Image addImgToListing(Long id, String name, String username) {
         Image image = new Image();
         image.setListing(listingDAO.getListingById(id));
         image.setName(name);
@@ -29,8 +29,8 @@ public class ImageDAOImpl implements ImageDAO{
     @Override
     public Image getImgFromListingById(Long listingId, Long imgId) {
         Image image = imageRepository.getImageByListing_IdAndAndId(listingId, imgId);
-        if(image==null){
-            throw new ImageNotFoundException("There is not such an image in listing "+listingId);
+        if (image == null) {
+            throw new ImageNotFoundException("There is not such an image in listing " + listingId);
         }
         return image;
     }
@@ -41,14 +41,14 @@ public class ImageDAOImpl implements ImageDAO{
     }
 
     @Override
-    public void deleteImgFromListing(Long listingId, Long imgId) {
+    public void deleteImgFromListing(Long listingId, Long imgId, String username) {
         imageRepository.deleteById(imgId);
     }
 
     @Override
     public Image findImageById(Long id) {
         Optional<Image> image = imageRepository.findById(id);
-        if(image.isEmpty()){
+        if (image.isEmpty()) {
             throw new ImageNotFoundException("There is not such an image in listing ");
         }
         return image.get();

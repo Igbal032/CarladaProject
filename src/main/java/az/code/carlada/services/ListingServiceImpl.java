@@ -2,21 +2,18 @@ package az.code.carlada.services;
 
 
 import az.code.carlada.components.ModelMapperComponent;
-import az.code.carlada.configs.SchedulerExecutorConfig;
+import az.code.carlada.components.SchedulerExecutorComponent;
 import az.code.carlada.daos.DictionaryDAO;
 import az.code.carlada.daos.ListingDAO;
 import az.code.carlada.daos.UserDAO;
 import az.code.carlada.dtos.*;
-import az.code.carlada.enums.*;
 import az.code.carlada.models.*;
 import az.code.carlada.repositories.StatusRepo;
-import az.code.carlada.utils.BasicUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,11 +25,11 @@ public class ListingServiceImpl implements ListingService {
     ModelMapperComponent mapperService;
     DictionaryDAO dictionaryDAO;
     UserDAO userDAO;
-    SchedulerExecutorConfig schExecService;
+    SchedulerExecutorComponent schExecService;
     ImageService imageService;
     StatusRepo statusRepo;
 
-    public ListingServiceImpl(StatusRepo statusRepo,ListingDAO listingDAO, ModelMapperComponent mapperService, DictionaryDAO dictionaryDAO, UserDAO userDAO, SchedulerExecutorConfig schExecService, ImageService imageService) {
+    public ListingServiceImpl(StatusRepo statusRepo, ListingDAO listingDAO, ModelMapperComponent mapperService, DictionaryDAO dictionaryDAO, UserDAO userDAO, SchedulerExecutorComponent schExecService, ImageService imageService) {
         this.listingDAO = listingDAO;
         this.mapperService = mapperService;
         this.dictionaryDAO = dictionaryDAO;
@@ -77,46 +74,42 @@ public class ListingServiceImpl implements ListingService {
     }
 
     @Override
-    public PaginationDTO<ListingListDTO> getAllListingByProfile(Integer page, Integer count) {
-        String username = "shafig";
+    public PaginationDTO<ListingListDTO> getAllListingByProfile(Integer page, Integer count, String username) {
         return getAllListingBySlug(username, page, count);
     }
 
     @Override
-    public ListingGetDTO getListingByIdByProfile(Long id) {
-        String username = "shafig";
+    public ListingGetDTO getListingByIdByProfile(Long id, String username) {
         return mapperService.convertListingToListingGetDto(listingDAO.getListingByUsernameById(username, id));
     }
 
     @Override
-    public ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO) {
-        AppUser user = userDAO.getUserByUsername("igbal-hoff");
-        List<Listing> listings= listingDAO.getAllActiveListingsByUser(user);
+    public ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO, String username) {
+        AppUser user = userDAO.getUserByUsername(username);
+        List<Listing> listings = listingDAO.getAllActiveListingsByUser(user);
         Listing listing = mapperService.convertLintingCreationToListing(listingCreationDTO);
         Optional<Listing> checkListing = listings.stream()
-                .filter(w-> w.getStatusType().getStatusName().equals("FREE") && w.isActive()).findFirst();
+                .filter(w -> w.getStatusType().getStatusName().equals("FREE") && w.isActive()).findFirst();
         Status status;
-        if (checkListing.isPresent()){
+        if (checkListing.isPresent()) {
             status = statusRepo.getStatusByStatusName("STANDARD");
-        }
-        else
+        } else
             status = statusRepo.getStatusByStatusName("FREE");
         listing.setStatusType(status);
         Listing listing1 = listingDAO.createListing(listing);
-        userDAO.payForListingStatus(listing1.getId(),status.getStatusName(),user.getUsername());
-        System.out.println("sdas");
+        userDAO.payForListingStatus(listing1.getId(), status.getStatusName(), user.getUsername());
         schExecService.runSubscriptionJob(listing1);
         return mapperService.convertListingToListingGetDto(listing1);
     }
 
     @Override
-    public void delete(long id) {
+    public void delete(long id, String username) {
         listingDAO.delete(id);
     }
 
     @Override
-    public Image setThumbnailForListing(Long listingId, MultipartFile file) throws IOException {
-        Image image = imageService.addImgToListing(listingId, file);
+    public Image setThumbnailForListing(Long listingId, MultipartFile file, String username) throws IOException {
+        Image image = imageService.addImgToListing(listingId, file, username);
         Listing listing = listingDAO.getListingById(listingId);
         listing.setThumbnailUrl(image.getName());
         listingDAO.saveListing(listing);

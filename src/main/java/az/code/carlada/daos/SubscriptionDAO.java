@@ -1,19 +1,17 @@
 package az.code.carlada.daos;
 
 import az.code.carlada.dtos.SubscriptionDTO;
-import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Subscription;
 
 import java.util.List;
 
 public interface SubscriptionDAO {
-    Subscription saveSubscription(SubscriptionDTO sub, AppUser appUser);
+    Subscription saveSubscription(SubscriptionDTO sub, String username);
 
-    List<Subscription> getSubscriptions(AppUser appUser);
+    List<Subscription> getSubscriptions(String username);
 
-    List<Subscription> getAllSubscriptions();
 
-    Subscription getSubscription(Long id, AppUser appUser);
+    Subscription getSubscription(Long id, String username);
 
-    void deleteSubscription(Long id, AppUser appUser);
+    void deleteSubscription(Long id, String username);
 }

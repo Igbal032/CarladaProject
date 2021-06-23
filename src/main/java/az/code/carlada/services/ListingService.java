@@ -19,13 +19,13 @@ public interface ListingService {
 
     PaginationDTO<ListingListDTO> getAllListingBySlug(String username, Integer page, Integer count);
 
-    PaginationDTO<ListingListDTO> getAllListingByProfile(Integer page, Integer count);
+    PaginationDTO<ListingListDTO> getAllListingByProfile(Integer page, Integer count, String username);
 
-    ListingGetDTO getListingByIdByProfile(Long id);
+    ListingGetDTO getListingByIdByProfile(Long id, String username);
 
-    ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO);
+    ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO, String username);
 
-    void delete(long id);
+    void delete(long id, String username);
 
-    Image setThumbnailForListing(Long listingId, MultipartFile file) throws IOException;
+    Image setThumbnailForListing(Long listingId, MultipartFile file, String username) throws IOException;
 }

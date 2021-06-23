@@ -1,6 +1,9 @@
 package az.code.carlada.controllers;
+
 import az.code.carlada.dtos.*;
 import az.code.carlada.models.AppUser;
+import az.code.carlada.models.Image;
+import az.code.carlada.services.ImageService;
 import az.code.carlada.services.ListingService;
 import az.code.carlada.services.ProfileService;
 import org.slf4j.Logger;
@@ -9,11 +12,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 import az.code.carlada.services.SubscriptionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -24,80 +29,96 @@ public class ProfileController {
     ListingService listingService;
     SubscriptionService subService;
     ProfileService profileService;
+    ImageService imageService;
     Logger logger = LoggerFactory.getLogger(ProfileController.class);
 
-    public ProfileController(ListingService listingService, SubscriptionService subService, ProfileService profileService) {
+    public ProfileController(ListingService listingService, SubscriptionService subService, ProfileService profileService, ImageService imageService) {
         this.listingService = listingService;
         this.subService = subService;
         this.profileService = profileService;
+        this.imageService = imageService;
     }
 
     @GetMapping("/listings")
     public ResponseEntity<List<ListingListDTO>> getAllListingByProfile(@RequestAttribute("user") UserDTO user, @RequestParam Integer page, @RequestParam Integer count) {
-        System.out.println(user);
-        return new ResponseEntity(listingService.getAllListingByProfile(page, count), HttpStatus.OK);
+        return new ResponseEntity(listingService.getAllListingByProfile(page, count, user.getUsername()), HttpStatus.OK);
     }
 
     @PostMapping("/listings")
-    public ResponseEntity<List<ListingGetDTO>> createNewListing(@RequestAttribute("user") UserDTO user,@RequestBody ListingCreationDTO listingCreationDTO) {
-        return new ResponseEntity(listingService.saveListing(listingCreationDTO), HttpStatus.OK);
+    public ResponseEntity<List<ListingGetDTO>> createNewListing(@RequestAttribute("user") UserDTO user, @RequestBody ListingCreationDTO listingCreationDTO) {
+        return new ResponseEntity(listingService.saveListing(listingCreationDTO, user.getUsername()), HttpStatus.OK);
     }
 
     @PutMapping("/listings/{id}")
-    public ResponseEntity<List<ListingGetDTO>> createNewListing(@PathVariable Long id, @RequestBody ListingCreationDTO listingCreationDTO) {
-        return new ResponseEntity(listingService.saveListing(listingCreationDTO.toBuilder().id(id).build()), HttpStatus.OK);
+    public ResponseEntity<List<ListingGetDTO>> createNewListing(@RequestAttribute("user") UserDTO user, @PathVariable Long id, @RequestBody ListingCreationDTO listingCreationDTO) {
+        return new ResponseEntity(listingService.saveListing(listingCreationDTO.toBuilder().id(id).build(), user.getUsername()), HttpStatus.OK);
     }
 
     @DeleteMapping("/listings/{id}")
-    public ResponseEntity<String> deleteListing(@PathVariable long id) {
-        listingService.delete(id);
-        return new ResponseEntity("Listing is deleted succesfully" ,HttpStatus.OK);
+    public ResponseEntity<String> deleteListing(@RequestAttribute("user") UserDTO user, @PathVariable long id) {
+        listingService.delete(id, user.getUsername());
+        return new ResponseEntity("Listing is deleted succesfully", HttpStatus.OK);
     }
 
     @GetMapping("/listings/{id}")
-    public ResponseEntity<ListingGetDTO> getListingByIdByProfile(@PathVariable Long id) {
-        return new ResponseEntity(listingService.getListingByIdByProfile(id), HttpStatus.OK);
+    public ResponseEntity<ListingGetDTO> getListingByIdByProfile(@RequestAttribute("user") UserDTO user, @PathVariable Long id) {
+        return new ResponseEntity(listingService.getListingByIdByProfile(id, user.getUsername()), HttpStatus.OK);
     }
+
     @PutMapping("/listings/{listingId}/makevip")
-    public ResponseEntity<TransactionListDTO> payForVipStatus(@PathVariable Long listingId){
-        String username = "shafig";//check
-        return new ResponseEntity<>(profileService.payForVipStatus(listingId,username),HttpStatus.OK);
+    public ResponseEntity<TransactionListDTO> payForVipStatus(@RequestAttribute("user") UserDTO user, @PathVariable Long listingId) {
+        return new ResponseEntity<>(profileService.payForVipStatus(listingId, user.getUsername()), HttpStatus.OK);
     }
+
     @PutMapping("/listings/{listingId}/makepaid")
-    public ResponseEntity<TransactionListDTO> payForStandardStatus(@PathVariable Long listingId){
-        String username = "shafig";//check
-        return new ResponseEntity<>(profileService.payForStandardStatus(listingId,username),HttpStatus.OK);
+    public ResponseEntity<TransactionListDTO> payForStandardStatus(@RequestAttribute("user") UserDTO user, @PathVariable Long listingId) {
+        return new ResponseEntity<>(profileService.payForStandardStatus(listingId, user.getUsername()), HttpStatus.OK);
     }
+
     @GetMapping("/subscriptions")
-    public ResponseEntity getSubscriptions() {
-        return new ResponseEntity(subService.getSubscriptions(), OK);
+    public ResponseEntity getSubscriptions(@RequestAttribute("user") UserDTO user) {
+        return new ResponseEntity(subService.getSubscriptions(user.getUsername()), OK);
     }
 
     @GetMapping("/subscriptions/{id}")
-    public ResponseEntity getSubscriptionById(@PathVariable Long id) {
-        return new ResponseEntity(subService.getSubscriptionById(id), OK);
+    public ResponseEntity getSubscriptionById(@RequestAttribute("user") UserDTO user, @PathVariable Long id) {
+        return new ResponseEntity(subService.getSubscriptionById(id, user.getUsername()), OK);
     }
 
     @PostMapping("/subscriptions")
-    public ResponseEntity createSubscription(@RequestBody SubscriptionDTO subDTO) {
-        return new ResponseEntity(subService.saveSubscription(subDTO), OK);
+    public ResponseEntity createSubscription(@RequestAttribute("user") UserDTO user, @RequestBody SubscriptionDTO subDTO) {
+        return new ResponseEntity(subService.saveSubscription(subDTO, user.getUsername()), OK);
     }
 
     @PutMapping("/subscriptions/{id}")
-    public ResponseEntity updateSubscription(@PathVariable Long id, @RequestBody SubscriptionDTO subDTO) {
+    public ResponseEntity updateSubscription(@RequestAttribute("user") UserDTO user, @PathVariable Long id, @RequestBody SubscriptionDTO subDTO) {
         subDTO.setSubId(id);
-        return new ResponseEntity(subService.saveSubscription(subDTO), OK);
+        return new ResponseEntity(subService.saveSubscription(subDTO, user.getUsername()), OK);
     }
 
     @DeleteMapping("/subscriptions/{id}")
-    public ResponseEntity disableSubscription(@PathVariable Long id) {
-        subService.deleteSubscription(id);
+    public ResponseEntity disableSubscription(@RequestAttribute("user") UserDTO user, @PathVariable Long id) {
+        subService.deleteSubscription(id, user.getUsername());
         return new ResponseEntity(OK);
     }
 
     @PutMapping("/wallet/increase")
-    public ResponseEntity<TransactionListDTO> wallet(@RequestParam Double amount){
-        String username = "igbal-hasanli";//check
-        return new ResponseEntity<>(profileService.addAmount(username,amount),HttpStatus.OK);
+    public ResponseEntity<TransactionListDTO> wallet(@RequestAttribute("user") UserDTO user, @RequestParam Double amount) {
+        return new ResponseEntity<>(profileService.addAmount(user.getUsername(), amount), HttpStatus.OK);
+    }
+
+    @PutMapping("{id}/images")
+    public ResponseEntity<Image> addImgByToListing(@RequestAttribute("user") UserDTO user, @PathVariable Long id, @RequestParam(name = "file") MultipartFile file) throws IOException {
+        return new ResponseEntity(imageService.addImgToListing(id, file, user.getUsername()), OK);
+    }
+
+    @DeleteMapping(path = "/{id}/images/{id1}")
+    public ResponseEntity<String> deleteImgFromListingById(@RequestAttribute("user") UserDTO user, @PathVariable Long id, @PathVariable Long id1) throws IOException {
+        imageService.deleteImgFromListing(id, id1, user.getUsername());
+        return new ResponseEntity("Image is deleted succesfully", OK);
+    }
+    @PutMapping(path = "/{id}/setThumbnail")
+    public ResponseEntity<Image> setThumbnailForListing(@RequestAttribute("user") UserDTO user, @PathVariable Long id, @RequestParam(name = "file") MultipartFile file) throws IOException {
+        return new ResponseEntity(listingService.setThumbnailForListing(id, file,user.getUsername()), OK);
     }
 }
