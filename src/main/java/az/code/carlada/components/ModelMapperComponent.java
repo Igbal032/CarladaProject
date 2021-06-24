@@ -48,8 +48,7 @@ public class ModelMapperComponent {
         return list.stream().map(i -> modelMapper.map(i, type)).collect(Collectors.toSet());
     }
 
-    public Listing convertLintingCreationToListing(ListingCreationDTO listingCreationDTO){
-        AppUser appUser = userDAO.getUserByUsername("igbal-hoff");
+    public Listing convertLintingCreationToListing(ListingCreationDTO listingCreationDTO, AppUser appUser){
         CarDetail carDetail = CarDetail.builder()
                 .bodyType(BasicUtil.getEnumFromString(BodyType.class, listingCreationDTO.getBodyType()))
                 .color(BasicUtil.getEnumFromString(Color.class, listingCreationDTO.getColor()))
