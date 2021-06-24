@@ -53,7 +53,9 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter impleme
                 .antMatchers("/api/v1/data/*").permitAll()
                 .antMatchers("/api/v1/listings/*").permitAll()
                 .antMatchers("/api/v1/user/*").permitAll()
-                .anyRequest().authenticated();
+                .antMatchers("/api/v1/profile/**").permitAll()
+                .anyRequest().permitAll();
+//                .anyRequest().authenticated();
     }
 
     @Override
