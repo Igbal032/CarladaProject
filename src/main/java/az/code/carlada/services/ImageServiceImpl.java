@@ -1,9 +1,11 @@
 package az.code.carlada.services;
 
-import az.code.carlada.daos.ImageDAO;
+import az.code.carlada.daos.interfaces.ImageDAO;
+import az.code.carlada.daos.interfaces.ListingDAO;
 import az.code.carlada.dtos.ImageDTO;
-import az.code.carlada.dtos.UserDTO;
 import az.code.carlada.models.Image;
+import az.code.carlada.models.Listing;
+import az.code.carlada.services.interfaces.ImageService;
 import az.code.carlada.utils.ImageUtil;
 import com.google.auth.Credentials;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -33,10 +35,12 @@ public class ImageServiceImpl implements ImageService {
     @Value("${firebase.bucket.url}")
     public String bucket;
     ImageDAO imageDAO;
+    ListingDAO listingDAO;
     Storage storage;
 
-    public ImageServiceImpl(ImageDAO imageDAO) {
+    public ImageServiceImpl(ImageDAO imageDAO, ListingDAO listingDAO) {
         this.imageDAO = imageDAO;
+        this.listingDAO = listingDAO;
     }
 
     @EventListener
@@ -71,7 +75,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Image addImgToListing(Long listingId, MultipartFile file, String username) throws IOException {
+    public Image addImgToListing(Long id, MultipartFile file, String username) throws IOException {
         String imageName = ImageUtil.generateFileName(file.getOriginalFilename());
         Map<String, String> map = new HashMap<>();
         map.put("firebaseStorageDownloadTokens", imageName);
@@ -81,7 +85,7 @@ public class ImageServiceImpl implements ImageService {
                 .setContentType(file.getContentType())
                 .build();
         storage.create(blobInfo, file.getInputStream());
-        return imageDAO.addImgToListing(listingId, imageName, username);
+        return imageDAO.addImgToListing(Image.builder().name(imageName).listing(listingDAO.getListingById(id)).build(), username);
     }
 
     @Override
@@ -93,4 +97,14 @@ public class ImageServiceImpl implements ImageService {
         storage.delete(blobId);
         imageDAO.deleteImgFromListing(listingId, imgId,username);
     }
+
+    @Override
+    public Image setThumbnailForListing(Long listingId, MultipartFile file, String username) throws IOException {
+        Image image = addImgToListing(listingId, file, username);
+        Listing listing = listingDAO.getListingById(listingId);
+        listing.setThumbnailUrl(image.getName());
+        listingDAO.saveListing(listing);
+        return image;
+    }
+
 }

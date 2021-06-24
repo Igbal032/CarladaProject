@@ -1,13 +1,11 @@
 package az.code.carlada.jobs;
 
 import az.code.carlada.components.MailSenderComponent;
-import az.code.carlada.daos.SearchDAO;
-import az.code.carlada.daos.SubscriptionDAO;
-import az.code.carlada.dtos.MailMessageDTO;
+import az.code.carlada.daos.interfaces.SearchDAO;
+import az.code.carlada.daos.interfaces.SubscriptionDAO;
 import az.code.carlada.dtos.TimerInfoDTO;
 import az.code.carlada.exceptions.FileReadException;
 import az.code.carlada.models.Listing;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

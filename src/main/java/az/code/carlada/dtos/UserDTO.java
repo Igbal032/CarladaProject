@@ -1,10 +1,10 @@
 package az.code.carlada.dtos;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Data
 public class UserDTO {
     private String email;
     private String password;

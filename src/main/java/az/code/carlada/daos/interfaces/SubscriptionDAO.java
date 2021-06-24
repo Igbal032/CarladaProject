@@ -1,4 +1,4 @@
-package az.code.carlada.daos;
+package az.code.carlada.daos.interfaces;
 
 import az.code.carlada.dtos.SubscriptionDTO;
 import az.code.carlada.models.Subscription;

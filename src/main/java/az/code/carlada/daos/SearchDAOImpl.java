@@ -1,5 +1,6 @@
 package az.code.carlada.daos;
 
+import az.code.carlada.daos.interfaces.SearchDAO;
 import az.code.carlada.dtos.SearchDTO;
 import az.code.carlada.models.Listing;
 import az.code.carlada.models.Subscription;
@@ -13,11 +14,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class SearchDAOImpl implements SearchDAO {

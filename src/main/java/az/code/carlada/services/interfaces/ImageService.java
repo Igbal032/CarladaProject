@@ -1,4 +1,4 @@
-package az.code.carlada.services;
+package az.code.carlada.services.interfaces;
 
 import az.code.carlada.dtos.ImageDTO;
 import az.code.carlada.dtos.UserDTO;
@@ -14,4 +14,5 @@ public interface ImageService {
     ImageDTO getImgFromListing(Long listingId, Long imgId);
     void deleteImgFromListing(Long listingId, Long imgId, String username) throws IOException;
     Image addImgToListing(Long listingId, MultipartFile file, String username) throws IOException;
+    Image setThumbnailForListing(Long listingId, MultipartFile file, String username) throws IOException;
 }

@@ -1,11 +1,11 @@
 package az.code.carlada.services;
 
 import az.code.carlada.components.ModelMapperComponent;
-import az.code.carlada.daos.SubscriptionDAO;
-import az.code.carlada.daos.UserDAO;
+import az.code.carlada.daos.interfaces.SubscriptionDAO;
+import az.code.carlada.daos.interfaces.UserDAO;
 import az.code.carlada.dtos.SubscriptionDTO;
 import az.code.carlada.dtos.SubscriptionListDTO;
-import az.code.carlada.models.AppUser;
+import az.code.carlada.services.interfaces.SubscriptionService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

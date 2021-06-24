@@ -1,13 +1,9 @@
 package az.code.carlada.controllers;
 
-import az.code.carlada.exceptions.DataNotFound;
-import az.code.carlada.services.DictionaryService;
-import az.code.carlada.services.SearchService;
-import org.springframework.http.HttpStatus;
+
+import az.code.carlada.services.interfaces.DictionaryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 import static org.springframework.http.HttpStatus.OK;
 

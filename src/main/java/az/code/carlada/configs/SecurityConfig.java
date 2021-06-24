@@ -28,7 +28,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(jsr250Enabled = true)
 @ComponentScan(basePackageClasses = KeycloakSecurityComponents.class)
 public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter implements WebMvcConfigurer {
     final TokenInterceptor productServiceUserTokenInterceptor;
@@ -48,6 +48,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter impleme
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().sessionManagement().
                 sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
+                .anyRequest().permitAll();
                 .antMatchers("/users/create").permitAll()
                 .antMatchers("/users/signin").permitAll()
                 .antMatchers("/api/v1/data/*").permitAll()
@@ -55,7 +56,6 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter impleme
                 .antMatchers("/api/v1/user/*").permitAll()
                 .antMatchers("/api/v1/profile/**").permitAll()
                 .anyRequest().permitAll();
-//                .anyRequest().authenticated();
     }
 
     @Override

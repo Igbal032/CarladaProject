@@ -1,4 +1,4 @@
-package az.code.carlada.services;
+package az.code.carlada.services.interfaces;
 
 import az.code.carlada.dtos.TransactionListDTO;
 

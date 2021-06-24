@@ -1,7 +1,7 @@
 package az.code.carlada.controllers;
 
 import az.code.carlada.dtos.UserDTO;
-import az.code.carlada.services.AccountService;
+import az.code.carlada.services.interfaces.AccountService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;

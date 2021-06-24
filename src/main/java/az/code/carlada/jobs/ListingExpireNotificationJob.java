@@ -1,8 +1,8 @@
 package az.code.carlada.jobs;
 
 import az.code.carlada.components.MailSenderComponent;
-import az.code.carlada.daos.ListingDAO;
-import az.code.carlada.daos.SearchDAO;
+import az.code.carlada.daos.interfaces.ListingDAO;
+import az.code.carlada.daos.interfaces.SearchDAO;
 import az.code.carlada.exceptions.FileReadException;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
