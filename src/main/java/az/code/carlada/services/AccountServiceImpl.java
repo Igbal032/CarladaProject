@@ -44,7 +44,6 @@ public class AccountServiceImpl implements AccountService {
     private String authServerUrl;
     @Value("${keycloak.realm}")
     private String realm;
-    private String role = "app-user";
     @Value("${keycloak.resource}")
     private String clientId;
     @Value("${keycloak.credentials.secret}")
@@ -66,7 +65,7 @@ public class AccountServiceImpl implements AccountService {
             // create password credential
             CredentialRepresentation passwordCred = passwordCred(userDTO);
             UserResource userResource = usersRessource.get(userId);
-            RoleRepresentation realmRoleUser = realmResource.roles().get(role).toRepresentation();
+            RoleRepresentation realmRoleUser = realmResource.roles().get("user").toRepresentation();
 
             // Assign realm role student to user
             userResource.roles().realmLevel().add(Arrays.asList(realmRoleUser));

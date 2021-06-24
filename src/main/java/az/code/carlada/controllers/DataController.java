@@ -1,9 +1,13 @@
 package az.code.carlada.controllers;
 
 
+import az.code.carlada.exceptions.DataNotFound;
 import az.code.carlada.services.interfaces.DictionaryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.security.RolesAllowed;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -20,6 +24,7 @@ public class DataController {
     public ResponseEntity<String> handlerNotFoundException(DataNotFound ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
+
 
     @GetMapping(path = "/makes")
     public ResponseEntity getMakes() {
