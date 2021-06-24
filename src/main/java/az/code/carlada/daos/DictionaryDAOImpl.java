@@ -23,8 +23,6 @@ import java.util.List;
 
 @Component
 public class DictionaryDAOImpl implements DictionaryDAO {
-    @PersistenceContext
-    EntityManager entityManager;
     MakeRepo makeRepo;
     ModelRepo modelRepo;
     CityRepo cityRepo;
@@ -44,8 +42,7 @@ public class DictionaryDAOImpl implements DictionaryDAO {
 
     @Override
     public List<Model> getModels(Long id) {
-        return entityManager.createQuery("select m from Model m where m.make.id=:makeId", Model.class)
-                .setParameter("makeId", id).getResultList();
+        return modelRepo.findByMakeId(id);
     }
 
     @Override

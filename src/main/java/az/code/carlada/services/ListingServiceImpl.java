@@ -81,7 +81,7 @@ public class ListingServiceImpl implements ListingService {
     public ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO, String username) {
         AppUser user = userDAO.getUserByUsername(username);
         List<Listing> listings = listingDAO.getAllActiveListingsByUser(user);
-        Listing listing = mapperService.convertLintingCreationToListing(listingCreationDTO, user);
+        Listing listing = mapperService.convertListingCreationToListing(listingCreationDTO, user);
         Optional<Listing> checkListing = listings.stream()
                 .filter(w -> w.getStatusType().getStatusName().equals("FREE") && w.isActive()).findFirst();
         Status status;

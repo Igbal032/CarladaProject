@@ -1,7 +1,6 @@
 package az.code.carlada.services;
 
 import az.code.carlada.components.ModelMapperComponent;
-import az.code.carlada.daos.SearchDAO;
 import az.code.carlada.dtos.ListingListDTO;
 import az.code.carlada.dtos.PaginationDTO;
 import az.code.carlada.dtos.SearchDTO;

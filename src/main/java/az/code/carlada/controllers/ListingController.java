@@ -1,6 +1,8 @@
 package az.code.carlada.controllers;
 
 import az.code.carlada.dtos.ListingListDTO;
+import az.code.carlada.exceptions.ImageNotFoundException;
+import az.code.carlada.exceptions.ListingNotFound;
 import az.code.carlada.models.Image;
 import az.code.carlada.services.interfaces.ImageService;
 import az.code.carlada.services.interfaces.ListingService;
