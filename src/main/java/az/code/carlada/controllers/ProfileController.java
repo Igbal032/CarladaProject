@@ -1,13 +1,10 @@
 package az.code.carlada.controllers;
 
 import az.code.carlada.dtos.*;
-import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Image;
-import az.code.carlada.services.ImageService;
-import az.code.carlada.services.ListingService;
-import az.code.carlada.services.ProfileService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import az.code.carlada.services.interfaces.ImageService;
+import az.code.carlada.services.interfaces.ListingService;
+import az.code.carlada.services.interfaces.ProfileService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,9 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
-import az.code.carlada.services.SubscriptionService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import az.code.carlada.services.interfaces.SubscriptionService;
 import org.springframework.web.multipart.MultipartFile;
 
 import static org.springframework.http.HttpStatus.OK;
@@ -30,7 +25,6 @@ public class ProfileController {
     SubscriptionService subService;
     ProfileService profileService;
     ImageService imageService;
-    Logger logger = LoggerFactory.getLogger(ProfileController.class);
 
     public ProfileController(ListingService listingService, SubscriptionService subService, ProfileService profileService, ImageService imageService) {
         this.listingService = listingService;
@@ -119,6 +113,6 @@ public class ProfileController {
     }
     @PutMapping(path = "/{id}/setThumbnail")
     public ResponseEntity<Image> setThumbnailForListing(@RequestAttribute("user") UserDTO user, @PathVariable Long id, @RequestParam(name = "file") MultipartFile file) throws IOException {
-        return new ResponseEntity(listingService.setThumbnailForListing(id, file,user.getUsername()), OK);
+        return new ResponseEntity(imageService.setThumbnailForListing(id, file,user.getUsername()), OK);
     }
 }

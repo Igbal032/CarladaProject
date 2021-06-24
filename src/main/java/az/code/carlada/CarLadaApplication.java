@@ -1,6 +1,5 @@
 package az.code.carlada;
 
-//import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

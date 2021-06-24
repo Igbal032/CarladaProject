@@ -1,5 +1,7 @@
 package az.code.carlada.daos;
 
+import az.code.carlada.daos.interfaces.SubscriptionDAO;
+import az.code.carlada.daos.interfaces.UserDAO;
 import az.code.carlada.dtos.*;
 import az.code.carlada.exceptions.SubscriptionNotFound;
 import az.code.carlada.models.Subscription;

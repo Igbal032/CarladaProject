@@ -1,7 +1,7 @@
 package az.code.carlada.controllers;
 
 import az.code.carlada.dtos.ListingListDTO;
-import az.code.carlada.services.ListingService;
+import az.code.carlada.services.interfaces.ListingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

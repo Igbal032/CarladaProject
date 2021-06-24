@@ -1,12 +1,13 @@
 package az.code.carlada.services;
 
 import az.code.carlada.components.ModelMapperComponent;
-import az.code.carlada.daos.DictionaryDAO;
+import az.code.carlada.daos.interfaces.DictionaryDAO;
 import az.code.carlada.dtos.CityDTO;
 import az.code.carlada.dtos.MakeDTO;
 import az.code.carlada.dtos.ModelDTO;
 import az.code.carlada.enums.BodyType;
 import az.code.carlada.enums.FuelType;
+import az.code.carlada.services.interfaces.DictionaryService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

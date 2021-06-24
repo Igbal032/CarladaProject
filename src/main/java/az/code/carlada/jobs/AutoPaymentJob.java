@@ -1,14 +1,14 @@
 package az.code.carlada.jobs;
 
 import az.code.carlada.components.SchedulerExecutorComponent;
-import az.code.carlada.daos.ListingDAO;
-import az.code.carlada.daos.SearchDAO;
-import az.code.carlada.daos.UserDAO;
+import az.code.carlada.daos.interfaces.ListingDAO;
+import az.code.carlada.daos.interfaces.SearchDAO;
+import az.code.carlada.daos.interfaces.TransactionDAO;
+import az.code.carlada.daos.interfaces.UserDAO;
 import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Listing;
 import az.code.carlada.models.Status;
 import az.code.carlada.models.Transaction;
-import az.code.carlada.repositories.TransactionRepo;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -21,14 +21,14 @@ public class AutoPaymentJob implements Job {
     ListingDAO listingDAO;
     SchedulerExecutorComponent schConfig;
     SearchDAO searchDAO;
-    TransactionRepo transactionRepo;
+    TransactionDAO transactionDAO;
     UserDAO userDAO;
 
-    public AutoPaymentJob(ListingDAO listingDAO, SchedulerExecutorComponent schConfig, SearchDAO searchDAO, TransactionRepo transactionRepo, UserDAO userDAO) {
+    public AutoPaymentJob(ListingDAO listingDAO, SchedulerExecutorComponent schConfig, SearchDAO searchDAO, TransactionDAO transactionDAO, UserDAO userDAO) {
         this.listingDAO = listingDAO;
         this.schConfig = schConfig;
         this.searchDAO = searchDAO;
-        this.transactionRepo = transactionRepo;
+        this.transactionDAO = transactionDAO;
         this.userDAO = userDAO;
     }
 
@@ -41,7 +41,7 @@ public class AutoPaymentJob implements Job {
             LocalDateTime today = LocalDateTime.now();
             boolean isAfterOrNot = today.isAfter(listing.getExpiredAt());
             if (isAfterOrNot) {
-                Status status = userDAO.getStatusByName("STANDARD");
+                Status status = transactionDAO.getStatusByName("STANDARD");
                 if (user.getAmount() < status.getPrice()) {
                     listing.setAutoPay(false);
                     listingDAO.saveListing(listing);
@@ -51,14 +51,14 @@ public class AutoPaymentJob implements Job {
                 userDAO.saveUser(user);
                 listing.setUpdatedAt(LocalDateTime.now());
                 listing.setExpiredAt(duration);
-                listing.setStatusType(userDAO.getStatusByName("STANDARD"));
+                listing.setStatusType(transactionDAO.getStatusByName("STANDARD"));
                 Transaction transaction = Transaction.builder()
                         .appUser(user)
                         .createdDate(LocalDateTime.now())
                         .listingId(listing.getId())
                         .amount((double)status.getPrice())
                         .build();
-                transactionRepo.save(transaction);
+                transactionDAO.save(transaction);
             }
             listingDAO.saveListing(listing);
         });

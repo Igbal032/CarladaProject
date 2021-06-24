@@ -1,5 +1,6 @@
 package az.code.carlada.daos;
 
+import az.code.carlada.daos.interfaces.DictionaryDAO;
 import az.code.carlada.enums.BodyType;
 import az.code.carlada.enums.FuelType;
 import az.code.carlada.exceptions.DataNotFound;

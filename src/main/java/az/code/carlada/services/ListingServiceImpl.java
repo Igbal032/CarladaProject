@@ -3,17 +3,15 @@ package az.code.carlada.services;
 
 import az.code.carlada.components.ModelMapperComponent;
 import az.code.carlada.components.SchedulerExecutorComponent;
-import az.code.carlada.daos.DictionaryDAO;
-import az.code.carlada.daos.ListingDAO;
-import az.code.carlada.daos.UserDAO;
+import az.code.carlada.daos.interfaces.ListingDAO;
+import az.code.carlada.daos.interfaces.TransactionDAO;
+import az.code.carlada.daos.interfaces.UserDAO;
 import az.code.carlada.dtos.*;
 import az.code.carlada.models.*;
-import az.code.carlada.repositories.StatusRepo;
+import az.code.carlada.services.interfaces.ListingService;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,21 +20,17 @@ import java.util.stream.Collectors;
 public class ListingServiceImpl implements ListingService {
 
     ListingDAO listingDAO;
-    ModelMapperComponent mapperService;
-    DictionaryDAO dictionaryDAO;
     UserDAO userDAO;
+    TransactionDAO transactionDAO;
+    ModelMapperComponent mapperService;
     SchedulerExecutorComponent schExecService;
-    ImageService imageService;
-    StatusRepo statusRepo;
 
-    public ListingServiceImpl(StatusRepo statusRepo, ListingDAO listingDAO, ModelMapperComponent mapperService, DictionaryDAO dictionaryDAO, UserDAO userDAO, SchedulerExecutorComponent schExecService, ImageService imageService) {
+    public ListingServiceImpl(ListingDAO listingDAO, UserDAO userDAO, TransactionDAO transactionDAO, ModelMapperComponent mapperService, SchedulerExecutorComponent schExecService) {
         this.listingDAO = listingDAO;
-        this.mapperService = mapperService;
-        this.dictionaryDAO = dictionaryDAO;
         this.userDAO = userDAO;
+        this.transactionDAO = transactionDAO;
+        this.mapperService = mapperService;
         this.schExecService = schExecService;
-        this.imageService = imageService;
-        this.statusRepo = statusRepo;
     }
 
     @Override
@@ -87,17 +81,17 @@ public class ListingServiceImpl implements ListingService {
     public ListingGetDTO saveListing(ListingCreationDTO listingCreationDTO, String username) {
         AppUser user = userDAO.getUserByUsername(username);
         List<Listing> listings = listingDAO.getAllActiveListingsByUser(user);
-        Listing listing = mapperService.convertLintingCreationToListing(listingCreationDTO);
+        Listing listing = mapperService.convertLintingCreationToListing(listingCreationDTO, user);
         Optional<Listing> checkListing = listings.stream()
                 .filter(w -> w.getStatusType().getStatusName().equals("FREE") && w.isActive()).findFirst();
         Status status;
         if (checkListing.isPresent()) {
-            status = statusRepo.getStatusByStatusName("STANDARD");
+            status = transactionDAO.getStatusByName("STANDARD");
         } else
-            status = statusRepo.getStatusByStatusName("FREE");
+            status = transactionDAO.getStatusByName("FREE");
         listing.setStatusType(status);
-        Listing listing1 = listingDAO.createListing(listing);
-        userDAO.payForListingStatus(listing1.getId(), status.getStatusName(), user.getUsername());
+        Listing listing1 = listingDAO.createListing(listing, username);
+        transactionDAO.payForListingStatus(listing1.getId(), status.getStatusName(), username);
         schExecService.runSubscriptionJob(listing1);
         return mapperService.convertListingToListingGetDto(listing1);
     }
@@ -105,14 +99,5 @@ public class ListingServiceImpl implements ListingService {
     @Override
     public void delete(long id, String username) {
         listingDAO.delete(id);
-    }
-
-    @Override
-    public Image setThumbnailForListing(Long listingId, MultipartFile file, String username) throws IOException {
-        Image image = imageService.addImgToListing(listingId, file, username);
-        Listing listing = listingDAO.getListingById(listingId);
-        listing.setThumbnailUrl(image.getName());
-        listingDAO.saveListing(listing);
-        return image;
     }
 }

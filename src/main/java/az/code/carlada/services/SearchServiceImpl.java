@@ -1,17 +1,15 @@
 package az.code.carlada.services;
 
 import az.code.carlada.components.ModelMapperComponent;
-import az.code.carlada.daos.SearchDAO;
+import az.code.carlada.daos.interfaces.SearchDAO;
 import az.code.carlada.dtos.ListingListDTO;
 import az.code.carlada.dtos.PaginationDTO;
 import az.code.carlada.dtos.SearchDTO;
 import az.code.carlada.models.Listing;
-import az.code.carlada.models.Subscription;
+import az.code.carlada.services.interfaces.SearchService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;

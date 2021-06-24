@@ -1,19 +1,16 @@
 package az.code.carlada.controllers;
 
 import az.code.carlada.dtos.ListingListDTO;
-import az.code.carlada.dtos.UserDTO;
 import az.code.carlada.models.Image;
-import az.code.carlada.services.ImageService;
-import az.code.carlada.services.ListingService;
+import az.code.carlada.services.interfaces.ImageService;
+import az.code.carlada.services.interfaces.ListingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.util.List;
 
-import az.code.carlada.services.SearchService;
-import org.springframework.web.multipart.MultipartFile;
+import az.code.carlada.services.interfaces.SearchService;
 
 import java.util.Map;
 

@@ -1,10 +1,9 @@
 package az.code.carlada.services;
 
-import az.code.carlada.daos.AccountDAO;
+import az.code.carlada.components.ModelMapperComponent;
+import az.code.carlada.daos.interfaces.AccountDAO;
 import az.code.carlada.dtos.UserDTO;
-import az.code.carlada.models.AppUser;
-import az.code.carlada.repositories.UserRepo;
-import az.code.carlada.utils.BasicUtil;
+import az.code.carlada.services.interfaces.AccountService;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.CreatedResponseUtil;
@@ -17,30 +16,35 @@ import org.keycloak.authorization.client.AuthzClient;
 import org.keycloak.authorization.client.Configuration;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class AccountServiceImpl implements AccountService{
+public class AccountServiceImpl implements AccountService {
     Environment environment;
     AccountDAO accountDAO;
+    ModelMapperComponent modelMapperComponent;
 
-    public AccountServiceImpl(Environment environment, AccountDAO accountDAO) {
+    public AccountServiceImpl(Environment environment, AccountDAO accountDAO, ModelMapperComponent modelMapperComponent) {
         this.environment = environment;
         this.accountDAO = accountDAO;
+        this.modelMapperComponent = modelMapperComponent;
     }
 
     @Value("${keycloak.auth-server-url}")
     private String authServerUrl;
     @Value("${keycloak.realm}")
     private String realm;
+    private String role = "app-user";
     @Value("${keycloak.resource}")
     private String clientId;
     @Value("${keycloak.credentials.secret}")
@@ -62,10 +66,14 @@ public class AccountServiceImpl implements AccountService{
             // create password credential
             CredentialRepresentation passwordCred = passwordCred(userDTO);
             UserResource userResource = usersRessource.get(userId);
+            RoleRepresentation realmRoleUser = realmResource.roles().get(role).toRepresentation();
+
+            // Assign realm role student to user
+            userResource.roles().realmLevel().add(Arrays.asList(realmRoleUser));
             // Set password credential
             userResource.resetPassword(passwordCred);
             //create newUser for database
-            AppUser appUser = accountDAO.createUser(userDTO);
+            accountDAO.createUser(userDTO);
         }
         return userDTO;
     }
@@ -78,9 +86,7 @@ public class AccountServiceImpl implements AccountService{
         Configuration configuration =
                 new Configuration(authServerUrl, realm, clientId, clientCredentials, null);
         AuthzClient authzClient = AuthzClient.create(configuration);
-        AccessTokenResponse response =
-                authzClient.obtainAccessToken(userDTO.getEmail(), userDTO.getPassword());
-        return response;
+        return authzClient.obtainAccessToken(userDTO.getEmail(), userDTO.getPassword());
     }
 
     @Override
@@ -91,7 +97,7 @@ public class AccountServiceImpl implements AccountService{
         user.setFirstName(userDTO.getFirstname());
         user.setLastName(userDTO.getLastname());
         user.setEmail(userDTO.getEmail());
-        user.setAttributes(Collections.singletonMap("phone",Collections.singletonList(userDTO.getPhoneNumber())));
+        user.setAttributes(Collections.singletonMap("phone", Collections.singletonList(userDTO.getPhoneNumber())));
         return user;
     }
 

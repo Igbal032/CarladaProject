@@ -1,4 +1,4 @@
-package az.code.carlada.services;
+package az.code.carlada.services.interfaces;
 
 
 import az.code.carlada.dtos.ListingCreationDTO;
@@ -27,5 +27,4 @@ public interface ListingService {
 
     void delete(long id, String username);
 
-    Image setThumbnailForListing(Long listingId, MultipartFile file, String username) throws IOException;
 }

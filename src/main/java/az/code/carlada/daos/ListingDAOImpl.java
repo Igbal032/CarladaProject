@@ -1,23 +1,18 @@
 package az.code.carlada.daos;
 
-import az.code.carlada.enums.TransactionType;
+import az.code.carlada.daos.interfaces.ListingDAO;
+import az.code.carlada.daos.interfaces.UserDAO;
 import az.code.carlada.exceptions.ListingNotFound;
-import az.code.carlada.exceptions.UserNotFound;
-import az.code.carlada.models.AppUser;
-import az.code.carlada.models.Listing;
-import az.code.carlada.models.Status;
-import az.code.carlada.models.Transaction;
+import az.code.carlada.models.*;
 import az.code.carlada.repositories.ListingRepo;
 import az.code.carlada.repositories.StatusRepo;
 import az.code.carlada.repositories.TransactionRepo;
-import az.code.carlada.repositories.UserRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
-import javax.swing.text.html.Option;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -28,13 +23,13 @@ public class ListingDAOImpl implements ListingDAO {
     ListingRepo listingRepository;
     StatusRepo statusRepo;
     TransactionRepo transactionRepo;
-    UserRepo userRepo;
+    UserDAO userDAO;
 
-    public ListingDAOImpl(UserRepo userRepo,StatusRepo statusRepo,ListingRepo listingRepository, TransactionRepo transactionRepo) {
+    public ListingDAOImpl(ListingRepo listingRepository, StatusRepo statusRepo, TransactionRepo transactionRepo, UserDAO userDAO) {
         this.listingRepository = listingRepository;
-        this.transactionRepo = transactionRepo;
         this.statusRepo = statusRepo;
-        this.userRepo = userRepo;
+        this.transactionRepo = transactionRepo;
+        this.userDAO = userDAO;
     }
 
     @Override
@@ -84,13 +79,13 @@ public class ListingDAOImpl implements ListingDAO {
     }
 
     @Override
-    public Listing createListing(Listing listing) {
+    public Listing createListing(Listing listing, String username) {
         Listing listing1 = listingRepository.save(listing);
         transactionRepo.save(Transaction.builder()
-                .amount((double)listing.getStatusType().getPrice())
+                .amount((double) listing.getStatusType().getPrice())
                 .listingId(listing1.getId())
                 .createdDate(LocalDateTime.now())
-                .appUser(listing.getAppUser())
+                .appUser(userDAO.getUserByUsername(username))
                 .build());
         return listing1;
     }

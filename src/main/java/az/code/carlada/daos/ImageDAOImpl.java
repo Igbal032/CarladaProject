@@ -1,5 +1,6 @@
 package az.code.carlada.daos;
 
+import az.code.carlada.daos.interfaces.ImageDAO;
 import az.code.carlada.exceptions.ImageNotFoundException;
 import az.code.carlada.models.Image;
 import az.code.carlada.repositories.ImageRepo;
@@ -11,18 +12,13 @@ import java.util.Optional;
 @Component
 public class ImageDAOImpl implements ImageDAO {
     ImageRepo imageRepository;
-    ListingDAO listingDAO;
 
-    public ImageDAOImpl(ImageRepo imageRepository, ListingDAO listingDAO) {
+    public ImageDAOImpl(ImageRepo imageRepository) {
         this.imageRepository = imageRepository;
-        this.listingDAO = listingDAO;
     }
 
     @Override
-    public Image addImgToListing(Long id, String name, String username) {
-        Image image = new Image();
-        image.setListing(listingDAO.getListingById(id));
-        image.setName(name);
+    public Image addImgToListing(Image image, String username) {
         return imageRepository.save(image);
     }
 

@@ -1,17 +1,15 @@
 package az.code.carlada.components;
 
 
-import az.code.carlada.daos.DictionaryDAO;
-import az.code.carlada.daos.UserDAO;
+import az.code.carlada.daos.interfaces.DictionaryDAO;
+import az.code.carlada.daos.interfaces.TransactionDAO;
+import az.code.carlada.daos.interfaces.UserDAO;
 import az.code.carlada.dtos.*;
 import az.code.carlada.enums.*;
-import az.code.carlada.exceptions.DataNotFound;
 import az.code.carlada.models.*;
 import az.code.carlada.utils.BasicUtil;
-import lombok.Builder;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -26,11 +24,13 @@ public class ModelMapperComponent {
     public ModelMapper modelMapper;
     public DictionaryDAO dictionaryDAO;
     public UserDAO userDAO;
+    public TransactionDAO transactionDAO;
 
-    public ModelMapperComponent(ModelMapper modelMapper, DictionaryDAO dictionaryDAO, UserDAO userDAO) {
+    public ModelMapperComponent(ModelMapper modelMapper, DictionaryDAO dictionaryDAO, UserDAO userDAO, TransactionDAO transactionDAO) {
         this.modelMapper = modelMapper;
         this.dictionaryDAO = dictionaryDAO;
         this.userDAO = userDAO;
+        this.transactionDAO = transactionDAO;
     }
 
     public <E, T> List<T> mapList(Collection<? extends E> list, Class<T> type) {
@@ -48,8 +48,7 @@ public class ModelMapperComponent {
         return list.stream().map(i -> modelMapper.map(i, type)).collect(Collectors.toSet());
     }
 
-    public Listing convertLintingCreationToListing(ListingCreationDTO listingCreationDTO){
-        AppUser appUser = userDAO.getUserByUsername("igbal-hoff");
+    public Listing convertLintingCreationToListing(ListingCreationDTO listingCreationDTO, AppUser appUser) {
         CarDetail carDetail = CarDetail.builder()
                 .bodyType(BasicUtil.getEnumFromString(BodyType.class, listingCreationDTO.getBodyType()))
                 .color(BasicUtil.getEnumFromString(Color.class, listingCreationDTO.getColor()))
@@ -68,7 +67,7 @@ public class ModelMapperComponent {
                 .cashOption(listingCreationDTO.getCashOption())
                 .carDetail(carDetail)
                 .build();
-        Status status= userDAO.getStatusByName(listingCreationDTO.getType());
+        Status status = transactionDAO.getStatusByName(listingCreationDTO.getType());
         Listing listing = Listing.builder()
                 .id(listingCreationDTO.getId())
                 .isActive(true)
@@ -132,7 +131,7 @@ public class ModelMapperComponent {
     }
 
     public Listing convertCreationDtoToListing(ListingCreationDTO i) {
-        Status status= userDAO.getStatusByName(i.getType());
+        Status status = transactionDAO.getStatusByName(i.getType());
         return Listing.builder()
                 .autoPay(i.getAuto_pay())
                 .description(i.getDescription())
