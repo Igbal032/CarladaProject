@@ -1,5 +1,6 @@
 package az.code.carlada.controllers;
 
+
 import az.code.carlada.services.interfaces.DictionaryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,11 @@ public class DataController {
 
     public DataController(DictionaryService dictionaryService) {
         this.dictionaryService = dictionaryService;
+    }
+
+    @ExceptionHandler(DataNotFound.class)
+    public ResponseEntity<String> handlerNotFoundException(DataNotFound ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(path = "/makes")

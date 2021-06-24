@@ -1,6 +1,10 @@
 package az.code.carlada.controllers;
 
 import az.code.carlada.dtos.*;
+import az.code.carlada.exceptions.ImageNotFoundException;
+import az.code.carlada.exceptions.ListingNotFound;
+import az.code.carlada.exceptions.UserNotFound;
+import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Image;
 import az.code.carlada.services.interfaces.ImageService;
 import az.code.carlada.services.interfaces.ListingService;
@@ -31,6 +35,19 @@ public class ProfileController {
         this.subService = subService;
         this.profileService = profileService;
         this.imageService = imageService;
+    }
+
+    @ExceptionHandler(UserNotFound.class)
+    public ResponseEntity<String> handlerNotFoundException(UserNotFound ex) {
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<String> handlerNotFoundException(ImageNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(ListingNotFound.class)
+    public ResponseEntity<String> handlerNotFoundException(ListingNotFound ex) {
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/listings")

@@ -29,6 +29,16 @@ public class ListingController {
         this.imageService = imageService;
     }
 
+    @ExceptionHandler(ListingNotFound.class)
+    public ResponseEntity<String> handlerNotFoundException(ListingNotFound ex) {
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(ImageNotFoundException.class)
+    public ResponseEntity<String> handlerNotFoundException(ImageNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(),HttpStatus.NOT_FOUND);
+    }
+
     @GetMapping
     public ResponseEntity<List<ListingListDTO>> getListingsByActiveStatus(@RequestParam Integer page, @RequestParam Integer count) {
         return new ResponseEntity(listingService.getListingsByActive(page, count, true), HttpStatus.OK);
