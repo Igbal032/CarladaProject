@@ -19,6 +19,8 @@ import java.util.List;
 import az.code.carlada.services.interfaces.SubscriptionService;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.security.RolesAllowed;
+
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
