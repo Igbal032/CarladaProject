@@ -64,10 +64,10 @@ public class SearchDAOImpl implements SearchDAO {
                 .and(subSpecs.betweenIntegers(list.getCar().getMileage(), "minMileage", "maxMileage"))
                 .and(subSpecs.betweenIntegers(list.getCar().getPrice(), "minPrice", "maxPrice"))
                 .and(subSpecs.betweenIntegers(list.getCar().getYear(), "minYear", "maxYear"))
-                .and(subSpecs.equalBarterOption(list.getBarterOption()))
-                .and(subSpecs.equalLoanOption(list.getLoanOption()))
-                .and(subSpecs.equalCashOption(list.getCashOption()))
-                .and(subSpecs.equalLeaseOption(list.getLeaseOption()));
+                .and(subSpecs.equalBarterOption(list.isBarterOption()))
+                .and(subSpecs.equalLoanOption(list.isLoanOption()))
+                .and(subSpecs.equalCashOption(list.isCashOption()))
+                .and(subSpecs.equalLeaseOption(list.isLeaseOption()));
 
         return subRepo.findAll(spec);
     }

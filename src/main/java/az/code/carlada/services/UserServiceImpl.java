@@ -1,9 +1,12 @@
 package az.code.carlada.services;
 
 import az.code.carlada.components.ModelMapperComponent;
-import az.code.carlada.daos.interfaces.AccountDAO;
+import az.code.carlada.components.SchedulerExecutorComponent;
+import az.code.carlada.daos.interfaces.UserDAO;
+import az.code.carlada.daos.interfaces.VerifyTokenDAO;
 import az.code.carlada.dtos.UserDTO;
-import az.code.carlada.services.interfaces.AccountService;
+import az.code.carlada.models.VerificationToken;
+import az.code.carlada.services.interfaces.UserService;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.CreatedResponseUtil;
@@ -24,21 +27,22 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.Response;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service
-public class AccountServiceImpl implements AccountService {
+public class UserServiceImpl implements UserService {
     Environment environment;
-    AccountDAO accountDAO;
+    UserDAO userDAO;
+    VerifyTokenDAO vtDAO;
     ModelMapperComponent modelMapperComponent;
+    SchedulerExecutorComponent schEx;
 
-    public AccountServiceImpl(Environment environment, AccountDAO accountDAO, ModelMapperComponent modelMapperComponent) {
+    public UserServiceImpl(Environment environment, UserDAO userDAO, VerifyTokenDAO vtDAO, ModelMapperComponent modelMapperComponent, SchedulerExecutorComponent schEx) {
         this.environment = environment;
-        this.accountDAO = accountDAO;
+        this.userDAO = userDAO;
+        this.vtDAO = vtDAO;
         this.modelMapperComponent = modelMapperComponent;
+        this.schEx = schEx;
     }
 
     @Value("${keycloak.auth-server-url}")
@@ -49,8 +53,10 @@ public class AccountServiceImpl implements AccountService {
     private String clientId;
     @Value("${keycloak.credentials.secret}")
     private String clientSecret;
+    @Value("${app.keycloak.initial.role}")
+    private String initialRole;
     @Value("${app.keycloak.standard.role}")
-    private String role;
+    private String standardRole;
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
@@ -72,14 +78,16 @@ public class AccountServiceImpl implements AccountService {
 
             UserResource userResource = usersResource.get(userId);
 
-            RoleRepresentation realmRoleUser = rolesResource.get(role).toRepresentation();
+            RoleRepresentation realmRoleUser = rolesResource.get(initialRole).toRepresentation();
             // Assign realm role student to user
             userResource.roles().realmLevel().add(Collections.singletonList(realmRoleUser));
             // Set password credential
             userResource.resetPassword(passwordCred);
             //create newUser for database
-            accountDAO.createUser(userDTO);
+            userDAO.createUser(userDTO);
+            sendVerifyEmail(userDTO);
         }
+
         return userDTO;
     }
 
@@ -113,6 +121,31 @@ public class AccountServiceImpl implements AccountService {
         passwordCred.setType(CredentialRepresentation.PASSWORD);
         passwordCred.setValue(userDTO.getPassword());
         return passwordCred;
+    }
+
+    @Override
+    public Boolean verifyUser(UserDTO userDTO, String token) {
+        String email = userDTO.getEmail();
+        VerificationToken vToken = vtDAO.findByToken(token);
+        if (vToken.getEmail().equals(email)) {
+            Keycloak keycloak = connectKeycloak();
+            RealmResource realmResource = keycloak.realm(realm);
+            RolesResource rolesResource = realmResource.roles();
+            RoleRepresentation realmRoleUser = rolesResource.get(standardRole).toRepresentation();
+            UserRepresentation userRep = realmResource.users().search(email).get(0);
+            userRep.setEmailVerified(true);
+            UserResource ur = realmResource.users().get(realmResource.users().search(email).get(0).getId());
+            ur.roles().realmLevel().add(Collections.singletonList(realmRoleUser));
+            ur.update(userRep);
+            vtDAO.delete(vToken);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void sendVerifyEmail(UserDTO userDTO) {
+        schEx.runEmailVerification(userDTO);
     }
 
     @Override

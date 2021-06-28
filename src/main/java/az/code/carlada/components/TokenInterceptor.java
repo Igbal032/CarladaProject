@@ -25,6 +25,7 @@ public class TokenInterceptor implements HandlerInterceptor {
             JsonNode payload = new ObjectMapper().readValue(data,JsonNode.class);
             String slug= BasicUtil.createSlug(payload.get("preferred_username").textValue());
             user.setUsername(slug);
+            user.setEmail(payload.get("email").textValue());
             request.setAttribute("user",user);
         }
         return true;
