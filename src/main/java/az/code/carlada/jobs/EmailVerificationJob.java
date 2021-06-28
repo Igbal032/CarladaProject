@@ -6,6 +6,7 @@ import az.code.carlada.components.SchedulerExecutorComponent;
 import az.code.carlada.daos.interfaces.VerifyTokenDAO;
 import az.code.carlada.dtos.TimerInfoDTO;
 import az.code.carlada.dtos.UserDTO;
+import az.code.carlada.models.AppUser;
 import az.code.carlada.models.VerificationToken;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -28,17 +29,17 @@ public class EmailVerificationJob implements Job {
 
     @Override
     public void execute(JobExecutionContext ctx) throws JobExecutionException {
-        TimerInfoDTO<UserDTO> infoDTO = (TimerInfoDTO<UserDTO>) ctx.getJobDetail().getJobDataMap().get(EmailVerificationJob.class.getSimpleName());
-        UserDTO userDTO = infoDTO.getCallbackData();
+        TimerInfoDTO<AppUser> infoDTO = (TimerInfoDTO<AppUser>) ctx.getJobDetail().getJobDataMap().get(EmailVerificationJob.class.getSimpleName());
+        AppUser user = infoDTO.getCallbackData();
         String token = UUID.randomUUID().toString();
 
         VerificationToken verifyToken = vtDAO.save(VerificationToken.builder()
                 .token(token)
-                .email(userDTO.getEmail())
+                .email(user.getEmail())
                 .build());
 
-        senderComponent.sendEmail(userDTO.getEmail(),
-                rUtil.property("subject") + " " + userDTO.getFirstname() + " " + userDTO.getLastname(),
+        senderComponent.sendEmail(user.getEmail(),
+                rUtil.property("subject") + " " + user.getFullName(),
                 rUtil.property("verify_text") + "  |  " + token);
 
         schEx.runDisableVerificationToken(verifyToken);

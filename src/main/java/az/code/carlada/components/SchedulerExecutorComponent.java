@@ -3,6 +3,7 @@ package az.code.carlada.components;
 import az.code.carlada.dtos.TimerInfoDTO;
 import az.code.carlada.dtos.UserDTO;
 import az.code.carlada.jobs.*;
+import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Listing;
 import az.code.carlada.models.VerificationToken;
 import org.springframework.context.annotation.Bean;
@@ -24,10 +25,10 @@ public class SchedulerExecutorComponent {
         scheduler.schedule(SubscriptionNotificationJob.class, infoDTO);
     }
 
-    public void runEmailVerification(UserDTO userDTO) {
-        TimerInfoDTO<UserDTO> infoDTO = new TimerInfoDTO<>();
+    public void runEmailVerification(AppUser appUser) {
+        TimerInfoDTO<AppUser> infoDTO = new TimerInfoDTO<>();
         infoDTO.setTotalFireCount(1);
-        infoDTO.setCallbackData(userDTO);
+        infoDTO.setCallbackData(appUser);
         scheduler.schedule(EmailVerificationJob.class, infoDTO);
     }
     public void runDisableVerificationToken(VerificationToken token) {

@@ -1,6 +1,7 @@
 package az.code.carlada.services.interfaces;
 
 import az.code.carlada.dtos.UserDTO;
+import az.code.carlada.models.AppUser;
 import org.apache.catalina.User;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.AccessTokenResponse;
@@ -18,7 +19,7 @@ public interface UserService {
 
     Boolean verifyUser(UserDTO userDTO, String token);
 
-    void sendVerifyEmail(UserDTO userDTO);
+    void sendVerifyEmail(String email);
 
     Keycloak connectKeycloak();
 }
