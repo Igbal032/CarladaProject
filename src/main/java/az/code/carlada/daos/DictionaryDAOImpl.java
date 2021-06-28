@@ -22,15 +22,9 @@ public class DictionaryDAOImpl<E> implements DictionaryDAO<E> {
     @PersistenceContext
     EntityManager em;
     ModelRepo modelRepo;
-    MakeRepo makeRepo;
-    CityRepo cityRepo;
-    SpecificationRepo specRepo;
 
-    public DictionaryDAOImpl(ModelRepo modelRepo, MakeRepo makeRepo, CityRepo cityRepo, SpecificationRepo specRepo) {
+    public DictionaryDAOImpl(ModelRepo modelRepo) {
         this.modelRepo = modelRepo;
-        this.makeRepo = makeRepo;
-        this.cityRepo = cityRepo;
-        this.specRepo = specRepo;
     }
 
     @Override
@@ -43,9 +37,17 @@ public class DictionaryDAOImpl<E> implements DictionaryDAO<E> {
     }
 
     @Override
-    public List<Specification> findAllSpecificationById(Iterable<Long> id) {
+    public List<E> findAllDataByIds(Iterable<Long> id, Class<E> clazz) {
         if (id == null) return null;
-        return specRepo.findAllById(id);
+        List<E> data = new ArrayList<>();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<E> cq = cb.createQuery(clazz);
+        Root<E> root = cq.from(clazz);
+        for (Long l : id) {
+            cq.select(root).where(cb.equal(root.get("id"), l));
+            data.add(em.createQuery(cq).getSingleResult());
+        }
+        return data;
     }
 
     @Override

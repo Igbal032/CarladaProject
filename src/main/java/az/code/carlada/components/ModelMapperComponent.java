@@ -57,7 +57,7 @@ public class ModelMapperComponent {
                 .color(BasicUtil.getEnumFromString(Color.class, listingCreationDTO.getColor()))
                 .fuelType(BasicUtil.getEnumFromString(FuelType.class, listingCreationDTO.getFuelType()))
                 .gearBox(BasicUtil.getEnumFromString(Gearbox.class, listingCreationDTO.getGearBox()))
-                .carSpecifications(dictionaryDAO.findAllSpecificationById(listingCreationDTO.getCarSpecIds()))
+                .carSpecifications(dictionaryDAO.findAllDataByIds(listingCreationDTO.getCarSpecIds(), Specification.class))
                 .build();
         Car car = Car.builder()
                 .model(modelDAO.findDataById(listingCreationDTO.getModelId(), Model.class))
@@ -153,7 +153,7 @@ public class ModelMapperComponent {
                 .make(makeDAO.findDataById(s.getMakeId(), Make.class))
                 .model(modelDAO.findDataById(s.getModelId(), Model.class))
                 .city(cityDAO.findDataById(s.getCityId(), City.class))
-                .specs(dictionaryDAO.findAllSpecificationById(s.getSpecs()))
+                .specs(dictionaryDAO.findAllDataByIds(s.getSpecs(), Specification.class))
                 .bodyType(getEnumFromString(BodyType.class, s.getBodyType()))
                 .fuelType(getEnumFromString(FuelType.class, s.getFuelType()))
                 .color(getEnumFromString(Color.class, s.getColor()))
