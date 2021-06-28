@@ -28,6 +28,8 @@ public class ListingDAOImpl implements ListingDAO {
     UserDAO userDAO;
     @Value("${app.status.initial}")
     String initial;
+    @Value("${app.status.vip}")
+    String vip;
 
     public ListingDAOImpl(ListingRepo listingRepository, StatusRepo statusRepo, TransactionRepo transactionRepo, UserDAO userDAO) {
         this.listingRepository = listingRepository;
@@ -55,7 +57,7 @@ public class ListingDAOImpl implements ListingDAO {
     @Override
     public Page<Listing> getAllVipListing(Integer page, Integer count) {
         Pageable pageable = PageRequest.of(page, count);
-        Status status = statusRepo.getStatusByStatusName(initial);
+        Status status = statusRepo.getStatusByStatusName(vip);
         return listingRepository.getAllByStatusType(status, pageable);
     }
 
@@ -84,8 +86,8 @@ public class ListingDAOImpl implements ListingDAO {
 
     @Override
     public Listing createListing(Listing listing, AppUser user) {
-        if(listing.getStatusType().getStatusName().equals(initial)){}
-        else if (user.getAmount()<listing.getStatusType().getPrice())
+        if (listing.getStatusType().getStatusName().equals(initial)) {
+        } else if (user.getAmount() < listing.getStatusType().getPrice())
             throw new EnoughBalanceException("Balance is not enough");
         Listing listing1 = listingRepository.save(listing);
         return listing1;

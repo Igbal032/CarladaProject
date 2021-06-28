@@ -10,6 +10,7 @@ import org.keycloak.admin.client.CreatedResponseUtil;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.keycloak.admin.client.resource.RealmResource;
+import org.keycloak.admin.client.resource.RolesResource;
 import org.keycloak.admin.client.resource.UserResource;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.authorization.client.AuthzClient;
@@ -48,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
     private String clientId;
     @Value("${keycloak.credentials.secret}")
     private String clientSecret;
-    @Value("${app.role.standard}")
+    @Value("${app.keycloak.standard.role}")
     private String role;
 
     @Override
@@ -58,19 +59,22 @@ public class AccountServiceImpl implements AccountService {
         UserRepresentation userRepresentation = userRepresentation(userDTO);
         //Get realm
         RealmResource realmResource = keycloak.realm(realm);
-        UsersResource usersRessource = realmResource.users();
-        Response response = usersRessource.create(userRepresentation);
+        RolesResource rolesResource = realmResource.roles();
+        UsersResource usersResource = realmResource.users();
+        Response response = usersResource.create(userRepresentation);
         userDTO.setStatusCode(response.getStatus());
         userDTO.setStatus(response.getStatusInfo().toString());
         if (response.getStatus() == 201) {
             String userId = CreatedResponseUtil.getCreatedId(response);
             // create password credential
             CredentialRepresentation passwordCred = passwordCred(userDTO);
-            UserResource userResource = usersRessource.get(userId);
-            RoleRepresentation realmRoleUser = realmResource.roles().get(role).toRepresentation();
+            passwordCred.setTemporary(false);
 
+            UserResource userResource = usersResource.get(userId);
+
+            RoleRepresentation realmRoleUser = rolesResource.get(role).toRepresentation();
             // Assign realm role student to user
-            userResource.roles().realmLevel().add(Arrays.asList(realmRoleUser));
+            userResource.roles().realmLevel().add(Collections.singletonList(realmRoleUser));
             // Set password credential
             userResource.resetPassword(passwordCred);
             //create newUser for database
