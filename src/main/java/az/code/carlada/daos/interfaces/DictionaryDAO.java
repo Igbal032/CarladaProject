@@ -11,7 +11,7 @@ public interface DictionaryDAO<E> {
 
     List<Model> getModelsByMake(Long id);
 
-    E findDataById(Long id,Class<E> clazz);
+    E findDataById(Long id, Class<E> clazz);
 
-    List<Specification> findAllSpecificationById(Iterable<Long> id);
+    List<E> findAllDataByIds(Iterable<Long> id, Class<E> clazz);
 }
