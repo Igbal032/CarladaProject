@@ -7,9 +7,12 @@ import az.code.carlada.dtos.MakeDTO;
 import az.code.carlada.dtos.ModelDTO;
 import az.code.carlada.enums.BodyType;
 import az.code.carlada.enums.FuelType;
+import az.code.carlada.models.City;
+import az.code.carlada.models.Make;
 import az.code.carlada.services.interfaces.DictionaryService;
 import org.springframework.stereotype.Service;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
@@ -26,26 +29,26 @@ public class DictionaryServiceImpl implements DictionaryService {
 
     @Override
     public List<MakeDTO> getMakes() {
-        return mapperService.mapList(dictionaryDAO.getMakes(), MakeDTO.class);
+        return mapperService.mapList(dictionaryDAO.getData(Make.class), MakeDTO.class);
     }
 
     @Override
     public List<ModelDTO> getModels(Long id) {
-        return mapperService.mapList(dictionaryDAO.getModels(id), ModelDTO.class);
+        return mapperService.mapList(dictionaryDAO.getModelsByMake(id), ModelDTO.class);
     }
 
     @Override
     public List<CityDTO> getCities() {
-        return mapperService.mapList(dictionaryDAO.getCities(), CityDTO.class);
+        return mapperService.mapList(dictionaryDAO.getData(City.class), CityDTO.class);
     }
 
     @Override
     public Set<FuelType> getFuelTypes() {
-        return mapperService.mapSet(dictionaryDAO.getFuelTypes(), FuelType.class);
+        return mapperService.mapSet(EnumSet.allOf(FuelType.class), FuelType.class);
     }
 
     @Override
     public Set<BodyType> getBodyTypes() {
-        return mapperService.mapSet(dictionaryDAO.getBodyTypes(), BodyType.class);
+        return mapperService.mapSet(EnumSet.allOf(BodyType.class), BodyType.class);
     }
 }

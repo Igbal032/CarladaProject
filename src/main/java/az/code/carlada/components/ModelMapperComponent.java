@@ -49,7 +49,9 @@ public class ModelMapperComponent {
     }
 
 
-    public Listing convertListingCreationToListing(ListingCreationDTO listingCreationDTO, AppUser appUser){
+    public Listing convertListingCreationToListing(ListingCreationDTO listingCreationDTO, AppUser appUser) {
+        DictionaryDAO<Model> modelDAO = dictionaryDAO;
+        DictionaryDAO<City> cityDAO = dictionaryDAO;
         CarDetail carDetail = CarDetail.builder()
                 .bodyType(BasicUtil.getEnumFromString(BodyType.class, listingCreationDTO.getBodyType()))
                 .color(BasicUtil.getEnumFromString(Color.class, listingCreationDTO.getColor()))
@@ -58,7 +60,7 @@ public class ModelMapperComponent {
                 .carSpecifications(dictionaryDAO.findAllSpecificationById(listingCreationDTO.getCarSpecIds()))
                 .build();
         Car car = Car.builder()
-                .model(dictionaryDAO.findModelById(listingCreationDTO.getModelId()))
+                .model(modelDAO.findDataById(listingCreationDTO.getModelId(), Model.class))
                 .year(listingCreationDTO.getYear())
                 .price(listingCreationDTO.getPrice())
                 .mileage(listingCreationDTO.getMileage())
@@ -75,7 +77,7 @@ public class ModelMapperComponent {
                 .description(listingCreationDTO.getDescription())
                 .appUser(appUser)
                 .statusType(status)
-                .city(dictionaryDAO.findCityById(listingCreationDTO.getCityId()))
+                .city(cityDAO.findDataById(listingCreationDTO.getCityId(), City.class))
                 .car(car)
                 .autoPay(listingCreationDTO.getAuto_pay())
                 .updatedAt(LocalDateTime.now())
@@ -142,12 +144,15 @@ public class ModelMapperComponent {
     }
 
     public Subscription convertDTOToSubscription(SubscriptionDTO s) {
+        DictionaryDAO<Model> modelDAO = dictionaryDAO;
+        DictionaryDAO<City> cityDAO = dictionaryDAO;
+        DictionaryDAO<Make> makeDAO = dictionaryDAO;
         return Subscription.builder()
                 .name(s.getName())
                 .subId(s.getSubId())
-                .make(dictionaryDAO.findMakeById(s.getMakeId()))
-                .model(dictionaryDAO.findModelById(s.getModelId()))
-                .city(dictionaryDAO.findCityById(s.getCityId()))
+                .make(makeDAO.findDataById(s.getMakeId(), Make.class))
+                .model(modelDAO.findDataById(s.getModelId(), Model.class))
+                .city(cityDAO.findDataById(s.getCityId(), City.class))
                 .specs(dictionaryDAO.findAllSpecificationById(s.getSpecs()))
                 .bodyType(getEnumFromString(BodyType.class, s.getBodyType()))
                 .fuelType(getEnumFromString(FuelType.class, s.getFuelType()))
