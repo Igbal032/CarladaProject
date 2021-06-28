@@ -5,6 +5,7 @@ import az.code.carlada.components.SchedulerExecutorComponent;
 import az.code.carlada.daos.interfaces.UserDAO;
 import az.code.carlada.daos.interfaces.VerifyTokenDAO;
 import az.code.carlada.dtos.UserDTO;
+import az.code.carlada.models.AppUser;
 import az.code.carlada.models.VerificationToken;
 import az.code.carlada.services.interfaces.UserService;
 import org.jboss.resteasy.client.jaxrs.ResteasyClientBuilder;
@@ -84,8 +85,8 @@ public class UserServiceImpl implements UserService {
             // Set password credential
             userResource.resetPassword(passwordCred);
             //create newUser for database
-            userDAO.createUser(userDTO);
-            sendVerifyEmail(userDTO);
+            AppUser appUser = userDAO.createUser(userDTO);
+            sendVerifyEmail(appUser.getEmail());
         }
 
         return userDTO;
@@ -131,11 +132,13 @@ public class UserServiceImpl implements UserService {
             Keycloak keycloak = connectKeycloak();
             RealmResource realmResource = keycloak.realm(realm);
             RolesResource rolesResource = realmResource.roles();
-            RoleRepresentation realmRoleUser = rolesResource.get(standardRole).toRepresentation();
+            RoleRepresentation initial = rolesResource.get(initialRole).toRepresentation();
+            RoleRepresentation standard = rolesResource.get(standardRole).toRepresentation();
             UserRepresentation userRep = realmResource.users().search(email).get(0);
             userRep.setEmailVerified(true);
             UserResource ur = realmResource.users().get(realmResource.users().search(email).get(0).getId());
-            ur.roles().realmLevel().add(Collections.singletonList(realmRoleUser));
+            ur.roles().realmLevel().remove(Collections.singletonList(initial));
+            ur.roles().realmLevel().add(Collections.singletonList(standard));
             ur.update(userRep);
             vtDAO.delete(vToken);
             return true;
@@ -144,8 +147,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void sendVerifyEmail(UserDTO userDTO) {
-        schEx.runEmailVerification(userDTO);
+    public void sendVerifyEmail(String email) {
+        AppUser appUser = userDAO.getUserByEmail(email);
+        schEx.runEmailVerification(appUser);
     }
 
     @Override

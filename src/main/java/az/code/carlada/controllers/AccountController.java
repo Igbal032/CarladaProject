@@ -33,7 +33,7 @@ public class AccountController {
 
     @GetMapping(path = "/user/send-verify-email")
     public ResponseEntity<?> sendVerifyEmail(@RequestAttribute("user") UserDTO user) {
-        userService.sendVerifyEmail(user);
+        userService.sendVerifyEmail(user.getEmail());
         return new ResponseEntity(HttpStatus.OK);
     }
 

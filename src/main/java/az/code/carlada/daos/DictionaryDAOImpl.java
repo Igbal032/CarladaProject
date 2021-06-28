@@ -2,11 +2,8 @@ package az.code.carlada.daos;
 
 import az.code.carlada.daos.interfaces.DictionaryDAO;
 
-import az.code.carlada.exceptions.DataNotFound;
-import az.code.carlada.models.City;
-import az.code.carlada.models.Make;
+
 import az.code.carlada.models.Model;
-import az.code.carlada.models.Specification;
 import az.code.carlada.repositories.*;
 import org.springframework.stereotype.Component;
 

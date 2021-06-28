@@ -133,15 +133,6 @@ public class ModelMapperComponent {
                 .build();
     }
 
-    public Listing convertCreationDtoToListing(ListingCreationDTO i) {
-        Status status = transactionDAO.getStatusByName(i.getType());
-        return Listing.builder()
-                .autoPay(i.getAuto_pay())
-                .description(i.getDescription())
-                .statusType(status)
-                .thumbnailUrl(i.getThumbnailUrl())
-                .build();
-    }
 
     public Subscription convertDTOToSubscription(SubscriptionDTO s) {
         DictionaryDAO<Model> modelDAO = dictionaryDAO;
