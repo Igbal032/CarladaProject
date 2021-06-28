@@ -72,27 +72,27 @@ public class ListingSpecificationComponentImpl implements ListingSpecificationCo
     @Override
     public Specification<Listing> equalLoanOption(Boolean loanOption) {
         return (root, query, cb) -> Objects.nonNull(loanOption) ?
-                cb.equal(root.get("car").get("loanOption"), loanOption) :
+                cb.equal(root.get("loanOption"), loanOption) :
                 cb.conjunction();
     }
 
     @Override
     public Specification<Listing> equalCashOption(Boolean cashOption) {
         return (root, query, cb) -> Objects.nonNull(cashOption) ?
-                cb.equal(root.get("car").get("cashOption"), cashOption) :
+                cb.equal(root.get("cashOption"), cashOption) :
                 cb.conjunction();
     }
 
     @Override
     public Specification<Listing> equalBarterOption(Boolean barterOption) {
         return (root, query, cb) -> Objects.nonNull(barterOption) ?
-                cb.equal(root.get("car").get("barterOption"), barterOption) :
+                cb.equal(root.get("barterOption"), barterOption) :
                 cb.conjunction();
     }
 
     public Specification<Listing> equalLeaseOption(Boolean leaseOption) {
         return (root, query, cb) -> Objects.nonNull(leaseOption) ?
-                cb.equal(root.get("car").get("leaseOption"), leaseOption) :
+                cb.equal(root.get("leaseOption"), leaseOption) :
                 cb.conjunction();
     }
 }

@@ -23,6 +23,10 @@ public class Listing {
     private boolean autoPay;
     private boolean isActive;
     private String description;
+    private Boolean loanOption;
+    private Boolean barterOption;
+    private Boolean leaseOption;
+    private Boolean cashOption;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private LocalDateTime expiredAt;

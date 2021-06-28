@@ -21,10 +21,6 @@ public class Car {
     private Long id;
     private Integer year;
     private Integer mileage;
-    private Boolean loanOption;
-    private Boolean barterOption;
-    private Boolean leaseOption;
-    private Boolean cashOption;
     private Integer price;
     @JsonBackReference
     @ManyToOne(fetch = FetchType.EAGER)
