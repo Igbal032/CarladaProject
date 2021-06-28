@@ -40,7 +40,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ComponentScan(basePackageClasses = KeycloakSecurityComponents.class)
 public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter implements WebMvcConfigurer {
     @Value("${app.keycloak.standard.role}")
-    private String role;
+    private String standard;
+    @Value("${app.keycloak.initial.role}")
+    private String notVerified;
 
     final TokenInterceptor productServiceUserTokenInterceptor;
 
@@ -67,12 +69,13 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter impleme
                 sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/users/*").permitAll()
+                .antMatchers("/account/*").permitAll()
+                .antMatchers("/account/user/*").hasRole(notVerified)
                 .antMatchers("/api/v1/data/*").permitAll()
                 .antMatchers("/api/v1/listings").permitAll()
                 .antMatchers("/api/v1/listings/*").permitAll()
                 .antMatchers("/api/v1/user/*").permitAll()
-                .antMatchers("/api/v1/profile/*").hasRole(role)
+                .antMatchers("/api/v1/profile/*").hasRole(standard)
                 .anyRequest()
                 .authenticated()
                 .and()
