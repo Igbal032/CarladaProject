@@ -8,6 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface ListingDAO {
 
@@ -22,6 +23,8 @@ public interface ListingDAO {
     Listing getListingByUsernameById(String username, Long id);
 
     Listing getListingById(Long id);
+
+    Optional<Listing> getListingsByAppUser(AppUser appUser);
 
     Listing createListing(Listing listing, AppUser appUser);
 

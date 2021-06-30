@@ -3,8 +3,10 @@ package az.code.carlada.services;
 import az.code.carlada.daos.interfaces.ImageDAO;
 import az.code.carlada.daos.interfaces.ListingDAO;
 import az.code.carlada.dtos.ImageDTO;
+import az.code.carlada.models.AppUser;
 import az.code.carlada.models.Image;
 import az.code.carlada.models.Listing;
+import az.code.carlada.repositories.UserRepo;
 import az.code.carlada.services.interfaces.ImageService;
 import az.code.carlada.utils.ImageUtil;
 import com.google.auth.Credentials;
@@ -21,14 +23,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class ImageServiceImpl implements ImageService {
+
+    private final UserRepo userRepository;
+
+
 
     @Value("${firebase.project.id}")
     public String projectId;
@@ -38,9 +41,10 @@ public class ImageServiceImpl implements ImageService {
     ListingDAO listingDAO;
     Storage storage;
 
-    public ImageServiceImpl(ImageDAO imageDAO, ListingDAO listingDAO) {
+    public ImageServiceImpl(ImageDAO imageDAO, ListingDAO listingDAO, UserRepo userRepository) {
         this.imageDAO = imageDAO;
         this.listingDAO = listingDAO;
+        this.userRepository = userRepository;
     }
 
     @EventListener
@@ -76,6 +80,8 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image addImgToListing(Long id, MultipartFile file, String username) throws IOException {
+        AppUser appUser = userRepository.getAppUserByUsername(username).get();
+        listingDAO.getListingsByAppUser(appUser);
         String imageName = ImageUtil.generateFileName(file.getOriginalFilename());
         Map<String, String> map = new HashMap<>();
         map.put("firebaseStorageDownloadTokens", imageName);
@@ -90,6 +96,8 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void deleteImgFromListing(Long listingId, Long imgId, String username) throws IOException {
+        AppUser appUser = userRepository.getAppUserByUsername(username).get();
+        listingDAO.getListingsByAppUser(appUser);
         Image image = imageDAO.findImageById(imgId);
         Credentials credentials = GoogleCredentials.fromStream(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("firebase.json")));
         Storage storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
@@ -100,6 +108,8 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public Image setThumbnailForListing(Long listingId, MultipartFile file, String username) throws IOException {
+        AppUser appUser = userRepository.getAppUserByUsername(username).get();
+        listingDAO.getListingsByAppUser(appUser);
         Image image = addImgToListing(listingId, file, username);
         Listing listing = listingDAO.getListingById(listingId);
         listing.setThumbnailUrl(image.getName());

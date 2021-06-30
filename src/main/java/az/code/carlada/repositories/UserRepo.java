@@ -9,4 +9,5 @@ public interface UserRepo extends JpaRepository<AppUser, Long> {
     Optional<AppUser> getAppUserByEmail(String email);
 
     Optional<AppUser> getAppUserByUsername(String username);
+
 }
