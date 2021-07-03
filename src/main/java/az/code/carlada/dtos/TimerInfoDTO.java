@@ -1,6 +1,5 @@
 package az.code.carlada.dtos;
 
-import az.code.carlada.models.Listing;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

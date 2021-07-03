@@ -110,4 +110,12 @@ public class ListingDAOImpl implements ListingDAO {
     public List<Listing> getWaitingExpired() {
         return listingRepository.getWaitingExpired();
     }
+
+    @Override
+    public Optional<Listing> getListingsByAppUser(AppUser appUser) {
+        Optional<Listing> listing = listingRepository.getListingsByAppUser(appUser);
+        if(listing.isEmpty())
+            throw new ListingNotFound("There is no such a listing found for this user");
+        return listing;
+    }
 }

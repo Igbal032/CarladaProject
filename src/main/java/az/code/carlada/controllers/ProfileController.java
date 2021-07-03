@@ -120,17 +120,17 @@ public class ProfileController {
         return new ResponseEntity<>(profileService.addAmount(user.getUsername(), amount), HttpStatus.OK);
     }
 
-    @PutMapping("{id}/images")
+    @PutMapping("/listings/{id}/images")
     public ResponseEntity<Image> addImgByToListing(@RequestAttribute("user") UserDTO user, @PathVariable Long id, @RequestParam(name = "file") MultipartFile file) throws IOException {
         return new ResponseEntity(imageService.addImgToListing(id, file, user.getUsername()), OK);
     }
 
-    @DeleteMapping(path = "/{id}/images/{id1}")
+    @DeleteMapping(path = "/listings/{id}/images/{id1}")
     public ResponseEntity<String> deleteImgFromListingById(@RequestAttribute("user") UserDTO user, @PathVariable Long id, @PathVariable Long id1) throws IOException {
         imageService.deleteImgFromListing(id, id1, user.getUsername());
         return new ResponseEntity("Image is deleted succesfully", OK);
     }
-    @PutMapping(path = "/{id}/setThumbnail")
+    @PutMapping(path = "/listings/{id}/setThumbnail")
     public ResponseEntity<Image> setThumbnailForListing(@RequestAttribute("user") UserDTO user, @PathVariable Long id, @RequestParam(name = "file") MultipartFile file) throws IOException {
         return new ResponseEntity(imageService.setThumbnailForListing(id, file,user.getUsername()), OK);
     }

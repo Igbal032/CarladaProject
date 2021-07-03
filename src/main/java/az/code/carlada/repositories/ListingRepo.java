@@ -15,6 +15,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 public interface ListingRepo extends JpaRepository<Listing, Long>, JpaSpecificationExecutor<Listing> {
     Page<Listing> getAllByStatusType(Status statusType, Pageable pageable);
@@ -27,5 +28,6 @@ public interface ListingRepo extends JpaRepository<Listing, Long>, JpaSpecificat
     void disableExpired();
     @Query("from Listing where expiredAt <= current_date and autoPay=false and isActive=true ")
     List<Listing> getWaitingExpired();
+    Optional<Listing> getListingsByAppUser(AppUser appUser);
 }
 
