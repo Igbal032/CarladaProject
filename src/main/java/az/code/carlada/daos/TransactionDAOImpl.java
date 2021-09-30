@@ -12,6 +12,7 @@ import az.code.carlada.models.Status;
 import az.code.carlada.models.Transaction;
 import az.code.carlada.repositories.StatusRepo;
 import az.code.carlada.repositories.TransactionRepo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -22,7 +23,8 @@ public class TransactionDAOImpl implements TransactionDAO {
     StatusRepo statusRepo;
     TransactionRepo transactionRepo;
     ListingDAO listingDAO;
-
+    @Value("${app.status.initial}")
+    String initial;
     public TransactionDAOImpl(UserDAO userDAO, StatusRepo statusRepo, TransactionRepo transactionRepo, ListingDAO listingDAO) {
         this.userDAO = userDAO;
         this.statusRepo = statusRepo;
@@ -63,10 +65,10 @@ public class TransactionDAOImpl implements TransactionDAO {
         AppUser appUser = userDAO.getUserByUsername(username);
         Transaction transaction;
         Listing listing = listingDAO.getListingById(listingId);
-        if (statusType.equals("FREE")) {
-            return null;
+        if (statusType.equals(initial)) {
+            transaction = createTransaction(listingId, 0.0, appUser);
         }
-        if (status.getPrice() <= appUser.getAmount()) {
+        else if (status.getPrice() < appUser.getAmount()) {
             appUser.setAmount(appUser.getAmount() - status.getPrice());
             transaction = createTransaction(listingId, (double) status.getPrice(), appUser);
         } else {

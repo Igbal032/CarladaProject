@@ -2,11 +2,13 @@ package az.code.carlada.daos;
 
 import az.code.carlada.daos.interfaces.ListingDAO;
 import az.code.carlada.daos.interfaces.UserDAO;
+import az.code.carlada.exceptions.EnoughBalanceException;
 import az.code.carlada.exceptions.ListingNotFound;
 import az.code.carlada.models.*;
 import az.code.carlada.repositories.ListingRepo;
 import az.code.carlada.repositories.StatusRepo;
 import az.code.carlada.repositories.TransactionRepo;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +26,8 @@ public class ListingDAOImpl implements ListingDAO {
     StatusRepo statusRepo;
     TransactionRepo transactionRepo;
     UserDAO userDAO;
+    @Value("${app.status.initial}")
+    String initial;
 
     public ListingDAOImpl(ListingRepo listingRepository, StatusRepo statusRepo, TransactionRepo transactionRepo, UserDAO userDAO) {
         this.listingRepository = listingRepository;
@@ -51,7 +55,7 @@ public class ListingDAOImpl implements ListingDAO {
     @Override
     public Page<Listing> getAllVipListing(Integer page, Integer count) {
         Pageable pageable = PageRequest.of(page, count);
-        Status status = statusRepo.getStatusByStatusName("FREE");
+        Status status = statusRepo.getStatusByStatusName(initial);
         return listingRepository.getAllByStatusType(status, pageable);
     }
 
@@ -79,14 +83,11 @@ public class ListingDAOImpl implements ListingDAO {
     }
 
     @Override
-    public Listing createListing(Listing listing, String username) {
+    public Listing createListing(Listing listing, AppUser user) {
+        if(listing.getStatusType().getStatusName().equals(initial)){}
+        else if (user.getAmount()<listing.getStatusType().getPrice())
+            throw new EnoughBalanceException("Balance is not enough");
         Listing listing1 = listingRepository.save(listing);
-        transactionRepo.save(Transaction.builder()
-                .amount((double) listing.getStatusType().getPrice())
-                .listingId(listing1.getId())
-                .createdDate(LocalDateTime.now())
-                .appUser(userDAO.getUserByUsername(username))
-                .build());
         return listing1;
     }
 

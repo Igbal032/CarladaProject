@@ -44,16 +44,10 @@ public class SchedulerExecutorComponent {
         scheduler.schedule(ListingExpireNotificationJob.class, infoDTO);
     }
     @Bean
-    public void AutoDisableJob() {
+    public void autoDisableJob() {
         TimerInfoDTO infoDTO = TimerInfoDTO.builder()
                 .runForever(true)
                 .repeatIntervalMS(1000 * 60 * 60 * 24)
-                .build();
-        scheduler.schedule(AutoDisableJob.class, infoDTO);
-    }
-    public void manualDisableJob() {
-        TimerInfoDTO infoDTO = TimerInfoDTO.builder()
-                .totalFireCount(1)
                 .build();
         scheduler.schedule(AutoDisableJob.class, infoDTO);
     }

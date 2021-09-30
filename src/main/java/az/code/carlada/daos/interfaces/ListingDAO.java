@@ -23,7 +23,7 @@ public interface ListingDAO {
 
     Listing getListingById(Long id);
 
-    Listing createListing(Listing listing, String username);
+    Listing createListing(Listing listing, AppUser appUser);
 
     void saveListing(Listing listing);
 

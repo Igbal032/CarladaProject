@@ -48,6 +48,8 @@ public class AccountServiceImpl implements AccountService {
     private String clientId;
     @Value("${keycloak.credentials.secret}")
     private String clientSecret;
+    @Value("${app.role.standard}")
+    private String role;
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
@@ -65,7 +67,7 @@ public class AccountServiceImpl implements AccountService {
             // create password credential
             CredentialRepresentation passwordCred = passwordCred(userDTO);
             UserResource userResource = usersRessource.get(userId);
-            RoleRepresentation realmRoleUser = realmResource.roles().get("user").toRepresentation();
+            RoleRepresentation realmRoleUser = realmResource.roles().get(role).toRepresentation();
 
             // Assign realm role student to user
             userResource.roles().realmLevel().add(Arrays.asList(realmRoleUser));

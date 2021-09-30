@@ -9,6 +9,7 @@ import az.code.carlada.daos.interfaces.UserDAO;
 import az.code.carlada.dtos.*;
 import az.code.carlada.models.*;
 import az.code.carlada.services.interfaces.ListingService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,13 @@ public class ListingServiceImpl implements ListingService {
     TransactionDAO transactionDAO;
     ModelMapperComponent mapperService;
     SchedulerExecutorComponent schExecService;
+
+    @Value("${app.status.vip}")
+    String vip;
+    @Value("${app.status.initial}")
+    String initial;
+    @Value("${app.status.standard}")
+    String standard;
 
     public ListingServiceImpl(ListingDAO listingDAO, UserDAO userDAO, TransactionDAO transactionDAO, ModelMapperComponent mapperService, SchedulerExecutorComponent schExecService) {
         this.listingDAO = listingDAO;
@@ -83,19 +91,18 @@ public class ListingServiceImpl implements ListingService {
         List<Listing> listings = listingDAO.getAllActiveListingsByUser(user);
         Listing listing = mapperService.convertListingCreationToListing(listingCreationDTO, user);
         Optional<Listing> checkListing = listings.stream()
-                .filter(w -> w.getStatusType().getStatusName().equals("FREE") && w.isActive()).findFirst();
+                .filter(w -> w.getStatusType().getStatusName().equals(initial) && w.isActive()).findFirst();
         Status status;
         if (checkListing.isPresent()) {
-            status = transactionDAO.getStatusByName("STANDARD");
+            status = transactionDAO.getStatusByName(standard);
         } else
-            status = transactionDAO.getStatusByName("FREE");
+            status = transactionDAO.getStatusByName(initial);
         listing.setStatusType(status);
-        Listing listing1 = listingDAO.createListing(listing, username);
+        Listing listing1 = listingDAO.createListing(listing, user);
         transactionDAO.payForListingStatus(listing1.getId(), status.getStatusName(), username);
         schExecService.runSubscriptionJob(listing1);
         return mapperService.convertListingToListingGetDto(listing1);
     }
-
     @Override
     public void delete(long id, String username) {
         listingDAO.delete(id);
